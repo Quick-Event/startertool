@@ -1,0 +1,9 @@
+[submodule "3rdparty/quickbox"]
+	path = 3rdparty/quickbox
+	url = git@github.com:Quick-Event/quickbox.git
+[submodule "3rdparty/necrolog"]
+	path = 3rdparty/necrolog
+	url = git@github.com:fvacek/necrolog.git
+[submodule "3rdparty/libshv"]
+	path = 3rdparty/libshv
+	url = git@github.com:silicon-heaven/libshv.git
