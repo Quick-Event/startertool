@@ -5,9 +5,8 @@
 #include <QUrl>
 #include <QFont>
 
+namespace shv::iotqt::rpc { class ClientConnection; }
 class AppCliOptions;
-class Controller;
-class Document;
 class QWidget;
 
 class Application : public QApplication
@@ -23,10 +22,15 @@ public:
 
 	static Application *instance() { return qobject_cast<Application*>(Super::instance()); }
 	static void applyCssStyleClass(QWidget *widget, const QString &css_class_name);
+	AppCliOptions *cliOptions() { return m_cliOptions; }
 
+	void connectToBroker(const QUrl &connection_url);
+	Q_SIGNAL void brokerConnectedChanged(bool is_connected, const QString &error);
 private:
 	void loadStyle();
 
+private:
+	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	AppCliOptions *m_cliOptions = nullptr;
 };
 

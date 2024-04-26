@@ -1,5 +1,6 @@
 #include "application.h"
 #include "appclioptions.h"
+#include <shv/iotqt/rpc/clientconnection.h>
 
 #include <shv/coreqt/log.h>
 
@@ -31,6 +32,23 @@ Application::Application(int &argc, char **argv, AppCliOptions* cli_opts)
 Application::~Application()
 {
 
+}
+
+void Application::connectToBroker(const QUrl &connection_url)
+{
+	if (m_rpcConnection) {
+		m_rpcConnection->disconnect();
+		m_rpcConnection->deleteLater();
+	}
+	m_rpcConnection = new shv::iotqt::rpc::ClientConnection(this);
+	connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerConnectedChanged, this, [this](bool is_connected) {
+		emit brokerConnectedChanged(is_connected, {});
+	});
+	connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerLoginError, this, [this](auto err) {
+		emit brokerConnectedChanged(false, QString::fromStdString(err.toString()));
+	});
+	m_rpcConnection->setConnectionUrl(connection_url);
+	m_rpcConnection->open();
 }
 
 void Application::loadStyle()

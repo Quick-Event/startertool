@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1312</width>
-    <height>663</height>
+    <width>619</width>
+    <height>378</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,9 +15,6 @@
   </property>
   <property name="styleSheet">
    <string notr="true"/>
-  </property>
-  <property name="dockNestingEnabled">
-   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
@@ -28,22 +25,22 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
-     <number>2</number>
+     <number>5</number>
     </property>
     <property name="leftMargin">
-     <number>2</number>
+     <number>5</number>
     </property>
     <property name="topMargin">
-     <number>0</number>
+     <number>5</number>
     </property>
     <property name="rightMargin">
-     <number>2</number>
+     <number>5</number>
     </property>
     <property name="bottomMargin">
-     <number>0</number>
+     <number>5</number>
     </property>
     <item>
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="toolBarFrame">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -51,71 +48,29 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>5</number>
+       </property>
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
        <property name="topMargin">
         <number>5</number>
        </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
        <property name="bottomMargin">
-        <number>4</number>
+        <number>5</number>
        </property>
        <item>
-        <widget class="QToolButton" name="tbShowMenu">
+        <widget class="QPushButton" name="tbShowMenu">
          <property name="text">
-          <string>...</string>
+          <string/>
          </property>
          <property name="icon">
-          <iconset resource="../brclab2.qrc">
+          <iconset resource="../startertool.qrc">
            <normaloff>:/images/menu.svg</normaloff>:/images/menu.svg</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="tbShowMainWidget">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../brclab2.qrc">
-           <normaloff>:/images/tunning.svg</normaloff>:/images/tunning.svg</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="tbShowSettingsWidget">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../brclab2.qrc">
-           <normaloff>:/images/cog.svg</normaloff>:/images/cog.svg</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="tbShowAlarmsWidget">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../brclab2.qrc">
-           <normaloff>:/images/alert.svg</normaloff>:/images/alert.svg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -139,22 +94,9 @@
         </spacer>
        </item>
        <item>
-        <widget class="QToolButton" name="tbShowConnectionWidget">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../brclab2.qrc">
-           <normaloff>:/images/connection.svg</normaloff>:/images/connection.svg</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="cssClass" stdset="0">
-          <string>connectionNotConnected</string>
+        <widget class="QLabel" name="connectionState">
+         <property name="pixmap">
+          <pixmap resource="../startertool.qrc">:/images/off-led.svg</pixmap>
          </property>
         </widget>
        </item>
@@ -162,19 +104,39 @@
      </widget>
     </item>
     <item>
-     <widget class="QStackedWidget" name="stackedWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="QLabel" name="lblError">
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">background: salmon; color: black</string>
       </property>
-      <property name="border" stdset="0">
-       <bool>true</bool>
+      <property name="text">
+       <string>TextLabel</string>
       </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <widget class="QWidget" name="tablePage">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QTableView" name="tableView"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -182,7 +144,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="../brclab2.qrc"/>
+  <include location="../startertool.qrc"/>
  </resources>
  <connections/>
 </ui>

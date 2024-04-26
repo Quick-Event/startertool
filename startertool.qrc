@@ -2,11 +2,11 @@
     <qresource prefix="/">
         <file>images/alert.svg</file>
         <file>images/cog.svg</file>
-        <file alias="blue-led">images/blue-led.svg</file>
-        <file alias="off-led">images/off-led.svg</file>
-        <file alias="green-led">images/green-led.svg</file>
-        <file alias="red-led">images/red-led.svg</file>
-        <file alias="yellow-led">images/yellow-led.svg</file>
+        <file>images/blue-led.svg</file>
+        <file>images/off-led.svg</file>
+        <file>images/green-led.svg</file>
+        <file>images/red-led.svg</file>
+        <file>images/yellow-led.svg</file>
         <file>images/scanning.svg</file>
         <file>images/tunning.svg</file>
         <file>images/data-analysis.svg</file>

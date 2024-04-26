@@ -45,6 +45,8 @@ add_executable(startertool
     src/appclioptions.cpp
     src/main.cpp
     src/mainwindow.cpp
+	src/loginwidget.cpp
+
     startertool.qrc
     )
 

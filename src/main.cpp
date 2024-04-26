@@ -17,9 +17,7 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("quickbox.cz");
 	QCoreApplication::setApplicationName("StarterTool");
 	QCoreApplication::setApplicationVersion(APP_VERSION);
-#if QT_VERSION_MAJOR < 6
-	QCoreApplication::setAttribute(Qt::ApplicationAttribute::AA_DisableWindowContextHelpButton);
-#endif
+
 	//NecroLog::registerTopic("MouseSelection", "Graph mouse selection");
 
 	std::vector<std::string> shv_args = NecroLog::setCLIOptions(argc, argv);
