@@ -13,7 +13,7 @@
 
 int main(int argc, char *argv[])
 {
-	QCoreApplication::setOrganizationName("QuickBox");
+	QCoreApplication::setOrganizationName("quickbox");
 	QCoreApplication::setOrganizationDomain("quickbox.cz");
 	QCoreApplication::setApplicationName("StarterTool");
 	QCoreApplication::setApplicationVersion(APP_VERSION);

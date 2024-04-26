@@ -46,6 +46,8 @@ add_executable(startertool
     src/main.cpp
     src/mainwindow.cpp
 	src/loginwidget.cpp
+	src/startlistwidget.cpp
+	src/rpcsqlresultmodel.cpp
 
     startertool.qrc
     )

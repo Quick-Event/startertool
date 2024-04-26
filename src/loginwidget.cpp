@@ -68,7 +68,7 @@ LoginWidget::LoginWidget(QWidget *parent) :
 LoginWidget::~LoginWidget()
 {
 	QSettings settings;
-	settings.setValue("url", connectionUrl().toString());
+	settings.setValue("brokerUrl", connectionUrl().toString());
 	settings.setValue("autoConnect", ui->autoConnect->isChecked());
 
 	delete ui;

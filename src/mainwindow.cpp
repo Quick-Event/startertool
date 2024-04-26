@@ -3,6 +3,7 @@
 
 #include "application.h"
 #include "loginwidget.h"
+#include "startlistwidget.h"
 
 #include <shv/coreqt/log.h>
 
@@ -18,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	ui->lblError->hide();
+
+	auto *startlist_widget = new StartListWidget();
+	ui->stackedWidget->addWidget(startlist_widget);
 
 	//connect(ui->tbShowMenu, &QPushButton::clicked, this, [this]() {
 	//	ui->lblError->setText("menu");
@@ -55,8 +59,8 @@ void MainWindow::showDialogWidget(QWidget *widget)
 	auto ix = ui->stackedWidget->addWidget(widget);
 	ui->stackedWidget->setCurrentIndex(ix);
 	ui->toolBarFrame->setDisabled(true);
-	connect(widget, &QWidget::destroyed, this, [this]() {
-		ui->toolBarFrame->setDisabled(false);
+	connect(widget, &QWidget::destroyed, ui->toolBarFrame, [frm=ui->toolBarFrame]() {
+		frm->setDisabled(false);
 	});
 }
 
