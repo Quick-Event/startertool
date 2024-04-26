@@ -23,7 +23,7 @@ set(LIBSHV_WITH_VISU OFF CACHE BOOL "")
 set(BUILD_TESTING OFF CACHE BOOL "")
 set(BUILD_SHV_UTILS OFF CACHE BOOL "")
 
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui Svg SerialPort Network LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui Svg SerialPort Network WebSockets LinguistTools)
 
 if(Qt6_FOUND)
 	set(CMAKE_AUTOMOC ON)
@@ -40,7 +40,8 @@ else()
 endif()
 
 
-add_executable(startertool
+qt_add_executable(startertool
+	MANUAL_FINALIZATION
     src/application.cpp
     src/appclioptions.cpp
     src/main.cpp
@@ -54,4 +55,14 @@ add_executable(startertool
 
 target_link_libraries(startertool PUBLIC Qt::Widgets libshviotqt)
 
-install(TARGETS startertool)
+include(GNUInstallDirs)
+install(TARGETS startertool
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(startertool)
+endif()
+
