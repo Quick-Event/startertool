@@ -57,12 +57,10 @@ LoginWidget::LoginWidget(QWidget *parent) :
 	}
 	auto auto_connect = settings.value("autoConnect").toBool();
 	ui->autoConnect->setChecked(auto_connect);
-	if (auto_connect) {
-		QTimer::singleShot(0, this, &LoginWidget::connectToBroker);
-	}
 	connect(ui->btConnect, &QPushButton::clicked, this, [this]() {
 		connectToBroker();
 	});
+	QTimer::singleShot(0, this, &LoginWidget::checkAutoConnect);
 }
 
 LoginWidget::~LoginWidget()
@@ -72,6 +70,19 @@ LoginWidget::~LoginWidget()
 	settings.setValue("autoConnect", ui->autoConnect->isChecked());
 
 	delete ui;
+}
+
+void LoginWidget::checkAutoConnect()
+{
+	auto auto_connect = ui->autoConnect->isChecked();
+	if (auto_connect) {
+		connectToBroker();
+	}
+}
+
+void LoginWidget::setAutoConnect(bool on)
+{
+	ui->autoConnect->setChecked(on);
 }
 
 QUrl LoginWidget::connectionUrl() const
@@ -90,3 +101,4 @@ void LoginWidget::connectToBroker()
 	auto *app = Application::instance();
 	app->connectToBroker(connectionUrl());
 }
+

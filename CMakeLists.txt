@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.18.4)
 
 # set(WITH_QE_SHVAPI OFF CACHE BOOL "Build SHV API service with QuickEvent")
+project(startertool LANGUAGES CXX)
 
-project(startertool LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_SHARED_LIBRARY_PREFIX "") # we don't want CMake to prepend "lib" to our libraries, we prefer adding that ourselves
@@ -41,7 +41,6 @@ endif()
 
 
 qt_add_executable(startertool
-	MANUAL_FINALIZATION
     src/application.cpp
     src/appclioptions.cpp
     src/main.cpp
@@ -61,8 +60,16 @@ install(TARGETS startertool
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+# set_target_properties(startertool PROPERTIES
+#     ${BUNDLE_ID_OPTION}
+#     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+#     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+#     MACOSX_BUNDLE TRUE
+#     WIN32_EXECUTABLE TRUE
+# )
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(startertool)
 endif()
+
 

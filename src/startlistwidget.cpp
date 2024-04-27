@@ -14,6 +14,7 @@ StartListWidget::StartListWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 	ui->tableView->setModel(m_model);
+	//ui->tableView->viewport()->setAttribute(Qt::WA_AcceptTouchEvents);
 
 	auto *app = Application::instance();
 	connect(app, &Application::brokerConnectedChanged, this, [this](bool is_connected, const QString &) {

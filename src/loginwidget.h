@@ -16,9 +16,11 @@ public:
 	explicit LoginWidget(QWidget *parent = nullptr);
 	~LoginWidget();
 
+	void setAutoConnect(bool on);
 private:
 	QUrl connectionUrl() const;
 	void connectToBroker();
+	void checkAutoConnect();
 private:
 	Ui::LoginWidget *ui;
 };

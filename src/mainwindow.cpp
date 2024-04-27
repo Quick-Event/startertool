@@ -9,6 +9,7 @@
 
 #include <QSettings>
 #include <QPushButton>
+#include <QMenu>
 
 namespace rpc = shv::iotqt::rpc;
 
@@ -23,9 +24,20 @@ MainWindow::MainWindow(QWidget *parent) :
 	auto *startlist_widget = new StartListWidget();
 	ui->stackedWidget->addWidget(startlist_widget);
 
+	{
+		auto *menu = new QMenu(this);
+		auto *a_connect = new QAction(tr("Connection"));
+		connect(a_connect, &QAction::triggered, this, [this]() {
+			auto *login_widget = new LoginWidget();
+			login_widget->setAutoConnect(false);
+			showDialogWidget(login_widget);
+		});
+		menu->addAction(a_connect);
+		ui->tbShowMenu->setMenu(menu);
+	}
 	//connect(ui->tbShowMenu, &QPushButton::clicked, this, [this]() {
-	//	ui->lblError->setText("menu");
-	//	ui->lblError->show();
+	//	auto *login_widget = new LoginWidget();
+	//	showDialogWidget(login_widget);
 	//});
 	auto *app = Application::instance();
 	connect(app, &Application::brokerConnectedChanged, this, [this](bool is_connected, const QString &errmsg) {

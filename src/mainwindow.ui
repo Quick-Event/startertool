@@ -65,9 +65,6 @@
        </property>
        <item>
         <widget class="QPushButton" name="tbShowMenu">
-         <property name="text">
-          <string/>
-         </property>
          <property name="icon">
           <iconset resource="../startertool.qrc">
            <normaloff>:/images/menu.svg</normaloff>:/images/menu.svg</iconset>
@@ -77,6 +74,9 @@
            <width>32</width>
            <height>32</height>
           </size>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
