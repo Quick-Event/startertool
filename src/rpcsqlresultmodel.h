@@ -25,4 +25,20 @@ protected:
 	Result m_result;
 };
 
+class StartListModel : public RpcSqlResultModel
+{
+	Q_OBJECT
+
+	using Super = RpcSqlResultModel;
+public:
+	enum class Column {CompetitorName, Registration, ClassName, StartTime};
+
+	explicit StartListModel(QObject *parent = nullptr);
+
+	int columnCount(const QModelIndex &) const override { return 1; }
+	QVariant columnValue(int row, Column col) const;
+private:
+	mutable QMap<QString, int> m_nameToIndex;
+};
+
 #endif // RPCSQLRESULTMODEL_H

@@ -1,5 +1,7 @@
 #include "rpcsqlresultmodel.h"
 
+#include <shv/coreqt/log.h>
+
 RpcSqlResultModel::RpcSqlResultModel(QObject *parent)
 	: Super{parent}
 {
@@ -39,4 +41,49 @@ void RpcSqlResultModel::setResult(const Result &result)
 	beginResetModel();
 	m_result = result;
 	endResetModel();
+}
+
+//=========================================================
+// StartListModel
+//=========================================================
+StartListModel::StartListModel(QObject *parent)
+	: Super(parent)
+{
+}
+
+QVariant StartListModel::columnValue(int row, Column col) const
+{
+	QString col_name;
+	switch (col) {
+	case Column::CompetitorName: {
+		col_name = QStringLiteral("competitorName");
+		break;
+	}
+	case Column::Registration: {
+		col_name = QStringLiteral("competitors.registration");
+		break;
+	}
+	case Column::ClassName: {
+		col_name = QStringLiteral("classes.name");
+		break;
+	}
+	case Column::StartTime: {
+		col_name = QStringLiteral("runs.starttimems");
+		break;
+	}
+	}
+	if (!m_nameToIndex.contains(col_name)) {
+		if (auto ix = m_result.columnIndex(col_name); ix.has_value()) {
+			m_nameToIndex[col_name] = ix.value();
+		}
+		else {
+			shvWarning() << "Unknown column name:" << col_name;
+			m_nameToIndex[col_name] = -1;
+		}
+	}
+	auto result_col = m_nameToIndex.value(col_name, -1);
+	if (result_col < 0) {
+		return {};
+	}
+	return m_result.value(row, result_col);
 }

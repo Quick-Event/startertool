@@ -47,6 +47,7 @@ qt_add_executable(startertool
     src/mainwindow.cpp
 	src/loginwidget.cpp
 	src/startlistwidget.cpp
+	src/startlistitemdelegate.cpp
 	src/rpcsqlresultmodel.cpp
 
     startertool.qrc
