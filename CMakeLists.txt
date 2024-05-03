@@ -41,25 +41,26 @@ endif()
 
 
 qt_add_executable(startertool
-    src/application.cpp
-    src/appclioptions.cpp
-    src/main.cpp
-    src/mainwindow.cpp
+	src/application.cpp
+	src/appclioptions.cpp
+	src/main.cpp
+	src/mainwindow.cpp
 	src/loginwidget.cpp
 	src/startlistwidget.cpp
 	src/startlistitemdelegate.cpp
 	src/rpcsqlresultmodel.cpp
+	src/stageconfigwidget.cpp
 
-    startertool.qrc
-    )
+	startertool.qrc
+)
 
 target_link_libraries(startertool PUBLIC Qt::Widgets libshviotqt)
 
 include(GNUInstallDirs)
 install(TARGETS startertool
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	BUNDLE DESTINATION .
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 # set_target_properties(startertool PROPERTIES
 #     ${BUNDLE_ID_OPTION}
@@ -70,7 +71,7 @@ install(TARGETS startertool
 # )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(startertool)
+	qt_finalize_executable(startertool)
 endif()
 
 

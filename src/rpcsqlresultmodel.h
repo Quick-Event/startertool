@@ -31,12 +31,14 @@ class StartListModel : public RpcSqlResultModel
 
 	using Super = RpcSqlResultModel;
 public:
-	enum class Column {CompetitorName, Registration, ClassName, StartTime};
+	enum Role {CompetitorName = Qt::UserRole, Registration, ClassName, StartTime};
 
 	explicit StartListModel(QObject *parent = nullptr);
 
 	int columnCount(const QModelIndex &) const override { return 1; }
-	QVariant columnValue(int row, Column col) const;
+	QVariant data(const QModelIndex &index, int role) const override;
+private:
+	QVariant roleValue(int row, Role role) const;
 private:
 	mutable QMap<QString, int> m_nameToIndex;
 };

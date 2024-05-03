@@ -8,9 +8,9 @@
 #include <QTimer>
 #include <QUrlQuery>
 
-LoginWidget::LoginWidget(QWidget *parent) :
-	QWidget(parent),
-	ui(new Ui::LoginWidget)
+LoginWidget::LoginWidget(AutoconnectEnabled autoconnect_enbled, QWidget *parent)
+	: QWidget(parent)
+	, ui(new Ui::LoginWidget)
 {
 	ui->setupUi(this);
 
@@ -60,7 +60,9 @@ LoginWidget::LoginWidget(QWidget *parent) :
 	connect(ui->btConnect, &QPushButton::clicked, this, [this]() {
 		connectToBroker();
 	});
-	QTimer::singleShot(0, this, &LoginWidget::checkAutoConnect);
+	if (autoconnect_enbled == AutoconnectEnabled::Yes) {
+		QTimer::singleShot(0, this, &LoginWidget::checkAutoConnect);
+	}
 }
 
 LoginWidget::~LoginWidget()
@@ -78,11 +80,6 @@ void LoginWidget::checkAutoConnect()
 	if (auto_connect) {
 		connectToBroker();
 	}
-}
-
-void LoginWidget::setAutoConnect(bool on)
-{
-	ui->autoConnect->setChecked(on);
 }
 
 QUrl LoginWidget::connectionUrl() const

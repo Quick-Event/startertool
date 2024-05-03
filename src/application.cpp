@@ -3,6 +3,7 @@
 
 #include <shv/iotqt/rpc/clientconnection.h>
 #include <shv/coreqt/log.h>
+#include <shv/chainpack/rpc.h>
 
 #ifdef Q_OS_WIN
 	#include <QStyleFactory>
@@ -14,6 +15,8 @@
 #include <QUrlQuery>
 
 #include <shv/iotqt/rpc/rpccall.h>
+
+using namespace shv::chainpack;
 
 Application::Application(int &argc, char **argv, AppCliOptions* cli_opts)
 	: Super(argc, argv)
@@ -51,6 +54,9 @@ void Application::connectToBroker(const QUrl &connection_url)
 	}
 	m_rpcConnection = new shv::iotqt::rpc::ClientConnection(this);
 	connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerConnectedChanged, this, [this](bool is_connected) {
+		if (is_connected) {
+			loadCurrentStageConfig();
+		}
 		emit brokerConnectedChanged(is_connected, {});
 	});
 	connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerLoginError, this, [this](auto err) {
@@ -58,6 +64,11 @@ void Application::connectToBroker(const QUrl &connection_url)
 	});
 	m_rpcConnection->setConnectionUrl(connection_url);
 	m_rpcConnection->open();
+}
+
+QDateTime Application::currentStageStart() const
+{
+	return currentStageConfig().value("startDateTime").toDateTime();
 }
 
 void Application::loadStyle()
@@ -73,12 +84,21 @@ void Application::loadStyle()
 	file.close();
 }
 
+void Application::loadCurrentStageConfig()
+{
+	callShvApiMethod("event/currentStage/config", Rpc::METH_GET, {}, this,
+		[this](const RpcValue &result) {
+			m_currentStageConfig = shv::coreqt::rpc::rpcValueToQVariant(result).toMap();
+		}
+	);
+}
+
 void Application::callShvMethod(const QString &shv_path,
 								const QString &method,
 								const QVariant &params,
 								const QObject *context,
-								std::function<void (const shv::chainpack::RpcValue &)> success_callback,
-								std::function<void (const shv::chainpack::RpcError &)> error_callback)
+								std::function<void (const RpcValue &)> success_callback,
+								std::function<void (const RpcError &)> error_callback)
 {
 	if(isBrokerConnected()) {
 		auto *rpcc = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
@@ -87,17 +107,17 @@ void Application::callShvMethod(const QString &shv_path,
 				->setParams(shv::coreqt::rpc::qVariantToRpcValue(params));
 		if (rpcc) {
 			if(success_callback) {
-				connect(rpcc, &shv::iotqt::rpc::RpcCall::result, context, [success_callback](const ::shv::chainpack::RpcValue &result) {
+				connect(rpcc, &shv::iotqt::rpc::RpcCall::result, context, [success_callback](const ::RpcValue &result) {
 					success_callback(result);
 				});
 			}
 			if(error_callback) {
-				connect(rpcc, &shv::iotqt::rpc::RpcCall::error, context, [error_callback](const ::shv::chainpack::RpcError &error) {
+				connect(rpcc, &shv::iotqt::rpc::RpcCall::error, context, [error_callback](const ::RpcError &error) {
 					error_callback(error);
 				});
 			}
 			else {
-				connect(rpcc, &shv::iotqt::rpc::RpcCall::error, context, [shv_path, method](const ::shv::chainpack::RpcError &error) {
+				connect(rpcc, &shv::iotqt::rpc::RpcCall::error, context, [shv_path, method](const ::RpcError &error) {
 					shvError() << "RPC method call error, path:" << shv_path << "method:" << method << "error:" << error.toString();
 				});
 			}
@@ -106,11 +126,11 @@ void Application::callShvMethod(const QString &shv_path,
 		else {
 			shvWarning() << shv_path << method << "RPC connection is not open";
 			if(error_callback)
-				error_callback(shv::chainpack::RpcError("RPC connection is not open"));
+				error_callback(RpcError("RPC connection is not open"));
 		}
 	}
 	else if(error_callback) {
-		error_callback(shv::chainpack::RpcError("Connection is not open"));
+		error_callback(RpcError("Connection is not open"));
 	}
 }
 
@@ -118,8 +138,8 @@ void Application::callShvApiMethod(const QString &shvapi_path,
 								   const QString &method,
 								   const QVariant &params,
 								   const QObject *context,
-								   std::function<void (const shv::chainpack::RpcValue &)> success_callback,
-								   std::function<void (const shv::chainpack::RpcError &)> error_callback)
+								   std::function<void (const RpcValue &)> success_callback,
+								   std::function<void (const RpcError &)> error_callback)
 {
 	QString shv_path = "test/" + m_eventName + '/' + shvapi_path;
 	callShvMethod(shv_path, method, params, context, success_callback, error_callback);

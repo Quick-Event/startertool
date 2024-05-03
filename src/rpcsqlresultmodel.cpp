@@ -51,23 +51,31 @@ StartListModel::StartListModel(QObject *parent)
 {
 }
 
-QVariant StartListModel::columnValue(int row, Column col) const
+QVariant StartListModel::data(const QModelIndex &index, int role) const
+{
+	if (role >= Qt::UserRole) {
+		return roleValue(index.row(), static_cast<Role>(role));
+	}
+	return {};
+}
+
+QVariant StartListModel::roleValue(int row, Role role) const
 {
 	QString col_name;
-	switch (col) {
-	case Column::CompetitorName: {
+	switch (role) {
+	case Role::CompetitorName: {
 		col_name = QStringLiteral("competitorName");
 		break;
 	}
-	case Column::Registration: {
+	case Role::Registration: {
 		col_name = QStringLiteral("competitors.registration");
 		break;
 	}
-	case Column::ClassName: {
+	case Role::ClassName: {
 		col_name = QStringLiteral("classes.name");
 		break;
 	}
-	case Column::StartTime: {
+	case Role::StartTime: {
 		col_name = QStringLiteral("runs.starttimems");
 		break;
 	}

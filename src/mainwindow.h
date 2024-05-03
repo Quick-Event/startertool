@@ -22,5 +22,6 @@ private:
 	void showError(const QString &msg);
 private:
 	Ui::MainWindow *ui;
+	QDateTime m_currentTime;
 };
 

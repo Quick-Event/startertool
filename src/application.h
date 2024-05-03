@@ -38,12 +38,16 @@ public:
 
 	void connectToBroker(const QUrl &connection_url);
 	Q_SIGNAL void brokerConnectedChanged(bool is_connected, const QString &error);
+
+	QVariantMap currentStageConfig() const { return m_currentStageConfig; }
+	QDateTime currentStageStart() const;
 private:
 	void loadStyle();
-
+	void loadCurrentStageConfig();
 private:
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	AppCliOptions *m_cliOptions = nullptr;
 	QString m_eventName;
+	QVariantMap m_currentStageConfig;
 };
 

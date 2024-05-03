@@ -13,10 +13,9 @@ class LoginWidget : public QWidget
 	Q_OBJECT
 
 public:
-	explicit LoginWidget(QWidget *parent = nullptr);
+	enum class AutoconnectEnabled {No, Yes};
+	explicit LoginWidget(AutoconnectEnabled autoconnect_enbled, QWidget *parent = nullptr);
 	~LoginWidget();
-
-	void setAutoConnect(bool on);
 private:
 	QUrl connectionUrl() const;
 	void connectToBroker();
