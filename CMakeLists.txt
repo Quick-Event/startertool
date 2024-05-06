@@ -49,9 +49,12 @@ qt_add_executable(startertool
 	src/startlistwidget.cpp
 	src/startlistitemdelegate.cpp
 	src/rpcsqlresultmodel.cpp
-	src/stageconfigwidget.cpp
+	src/settingswidget.cpp
+	src/settingspage.cpp
+	src/stagesettingspage.cpp
 
 	startertool.qrc
+	src/classfiltersettingspage.h src/classfiltersettingspage.cpp src/classfiltersettingspage.ui
 )
 
 target_link_libraries(startertool PUBLIC Qt::Widgets libshviotqt)

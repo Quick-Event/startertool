@@ -4,6 +4,7 @@
 #include "startlistitemdelegate.h"
 #include "application.h"
 #include "rpcsqlresultmodel.h"
+#include "classfiltersettingspage.h"
 
 #include <QResizeEvent>
 #include <QScrollBar>
@@ -27,6 +28,7 @@ StartListWidget::StartListWidget(QWidget *parent) :
 			reload();
 		}
 	});
+	connect(app, &Application::settingsChanged, this, &StartListWidget::reload);
 }
 
 StartListWidget::~StartListWidget()
@@ -42,8 +44,14 @@ void StartListWidget::resizeEvent(QResizeEvent *event)
 
 void StartListWidget::reload()
 {
+	auto class_filter = ClassFilterSettingsPage::checkedClasses();
+	QVariant param;
+	if (class_filter.enabled) {
+		auto where = QStringLiteral("classes.name IN ('%1')").arg(class_filter.checkedClasses.join("','"));
+		param = QVariantMap {{"where", where}};
+	}
 	auto *app = Application::instance();
-	app->callShvApiMethod("event/currentStage/startList", "table", {}, this,
+	app->callShvApiMethod("event/currentStage/startList", "table", param, this,
 		[this](const RpcValue &result) {
 			auto res = RpcSqlResult::fromRpcValue(result);
 			m_model->setResult(res);

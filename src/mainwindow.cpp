@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "stageconfigwidget.h"
+#include "settingswidget.h"
 #include "application.h"
 #include "loginwidget.h"
 #include "startlistwidget.h"
@@ -37,10 +37,12 @@ MainWindow::MainWindow(QWidget *parent) :
 		menu->addAction(a);
 	}
 	{
-		auto *a = new QAction(tr("Stage config"));
+		auto *a = new QAction(tr("Settings"));
 		connect(a, &QAction::triggered, this, [this]() {
-			auto *widget = new StageConfigWidget();
+			auto *widget = new SettingsWidget();
 			showDialogWidget(widget);
+			connect(widget, &SettingsWidget::destroyed, Application::instance(), &Application::emitSettingsChanged);
+
 		});
 		menu->addAction(a);
 	}
@@ -49,20 +51,21 @@ MainWindow::MainWindow(QWidget *parent) :
 	//	showDialogWidget(login_widget);
 	//});
 	auto *app = Application::instance();
+	connect(app, &Application::showErrorRq, this, &MainWindow::showError);
 	connect(app, &Application::brokerConnectedChanged, this, [this](bool is_connected, const QString &errmsg) {
 		if (errmsg.isEmpty()) {
 			if (is_connected) {
 				ui->connectionState->setPixmap(QPixmap(QString::fromUtf8(":/images/green-led.svg")));
-				showError({});
+				hideError();
 			}
 			else {
 				ui->connectionState->setPixmap(QPixmap(QString::fromUtf8(":/images/gray-led.svg")));
-				showError(tr("Diconnected from broker"));
+				showError(tr("Diconnected from broker"), NecroLogLevel::Warning);
 			}
 		}
 		else {
 			ui->connectionState->setPixmap(QPixmap(QString::fromUtf8(":/images/red-led.svg")));
-			showError(errmsg);
+			showError(errmsg, NecroLogLevel::Error);
 		}
 	});
 	{
@@ -99,12 +102,30 @@ void MainWindow::showDialogWidget(QWidget *widget)
 	});
 }
 
-void MainWindow::showError(const QString &msg)
+void MainWindow::showError(const QString &msg, NecroLogLevel level)
 {
 	if (msg.isEmpty()) {
 		ui->lblError->hide();
 	}
 	else {
+		switch (level) {
+		case NecroLogLevel::Invalid:
+			ui->lblError->hide();
+			return;
+		case NecroLogLevel::Fatal:
+		case NecroLogLevel::Error:
+			ui->lblError->setStyleSheet("background: salmon; color: black");
+			break;
+		case NecroLogLevel::Warning:
+			ui->lblError->setStyleSheet("background: orange; color: black");
+			break;
+		case NecroLogLevel::Info:
+		case NecroLogLevel::Message:
+		case NecroLogLevel::Debug:
+			ui->lblError->setStyleSheet("background: white; color: black");
+			break;
+		break;
+		}
 		ui->lblError->setText(msg);
 		ui->lblError->show();
 	}

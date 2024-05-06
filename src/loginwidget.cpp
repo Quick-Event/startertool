@@ -96,6 +96,7 @@ QUrl LoginWidget::connectionUrl() const
 void LoginWidget::connectToBroker()
 {
 	auto *app = Application::instance();
+	app->showError(tr("Connecting to broker"), NecroLogLevel::Info);
 	app->connectToBroker(connectionUrl());
 }
 

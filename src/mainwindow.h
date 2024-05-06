@@ -1,5 +1,6 @@
 #pragma once
 
+#include <necrologlevel.h>
 #include <shv/iotqt/rpc/clientconnection.h>
 
 #include <QMainWindow>
@@ -19,7 +20,8 @@ public:
 	~MainWindow() override;
 private:
 	void showDialogWidget(QWidget *widget);
-	void showError(const QString &msg);
+	void showError(const QString &msg, NecroLogLevel level);
+	void hideError() { showError({}, NecroLogLevel::Invalid); }
 private:
 	Ui::MainWindow *ui;
 	QDateTime m_currentTime;

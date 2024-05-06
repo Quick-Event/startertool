@@ -55,6 +55,7 @@ void Application::connectToBroker(const QUrl &connection_url)
 	m_rpcConnection = new shv::iotqt::rpc::ClientConnection(this);
 	connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerConnectedChanged, this, [this](bool is_connected) {
 		if (is_connected) {
+			subscribeChanges();
 			loadCurrentStageConfig();
 		}
 		emit brokerConnectedChanged(is_connected, {});
@@ -82,6 +83,13 @@ void Application::loadStyle()
 	}
 
 	file.close();
+}
+
+void Application::subscribeChanges()
+{
+	QString sig = "runChanged";
+	auto *rpc_call = shv::iotqt::rpc::RpcCall::createSubscriptionRequest(m_rpcConnection, {}, sig, sig);
+	rpc_call->start();
 }
 
 void Application::loadCurrentStageConfig()

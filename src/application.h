@@ -1,5 +1,7 @@
 #pragma once
 
+#include <necrologlevel.h>
+
 #include <QApplication>
 #include <QTimeZone>
 #include <QUrl>
@@ -41,8 +43,16 @@ public:
 
 	QVariantMap currentStageConfig() const { return m_currentStageConfig; }
 	QDateTime currentStageStart() const;
+
+	Q_SIGNAL void showErrorRq(const QString &msg, NecroLogLevel level);
+	void showError(const QString &msg, NecroLogLevel level) { emit showErrorRq(msg, level); }
+	void hideError() { showError({}, NecroLogLevel::Invalid); }
+
+	Q_SIGNAL void settingsChanged();
+	void emitSettingsChanged() { emit settingsChanged(); }
 private:
 	void loadStyle();
+	void subscribeChanges();
 	void loadCurrentStageConfig();
 private:
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
