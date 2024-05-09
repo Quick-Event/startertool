@@ -1,6 +1,8 @@
 #include "rpcsqlresultmodel.h"
+#include "application.h"
 
 #include <shv/coreqt/log.h>
+#include <shv/coreqt/rpc.h>
 
 RpcSqlResultModel::RpcSqlResultModel(QObject *parent)
 	: Super{parent}
@@ -49,6 +51,7 @@ void RpcSqlResultModel::setResult(const Result &result)
 StartListModel::StartListModel(QObject *parent)
 	: Super(parent)
 {
+	connect(Application::instance(), &Application::runChanged, this, &StartListModel::onRunChanged);
 }
 
 QVariant StartListModel::data(const QModelIndex &index, int role) const
@@ -59,7 +62,7 @@ QVariant StartListModel::data(const QModelIndex &index, int role) const
 	return {};
 }
 
-QVariant StartListModel::roleValue(int row, Role role) const
+std::optional<int> StartListModel::roleToColumn(Role role) const
 {
 	QString col_name;
 	switch (role) {
@@ -79,6 +82,10 @@ QVariant StartListModel::roleValue(int row, Role role) const
 		col_name = QStringLiteral("runs.starttimems");
 		break;
 	}
+	case Role::RunId: {
+		col_name = QStringLiteral("runs.id");
+		break;
+	}
 	}
 	if (!m_nameToIndex.contains(col_name)) {
 		if (auto ix = m_result.columnIndex(col_name); ix.has_value()) {
@@ -93,5 +100,38 @@ QVariant StartListModel::roleValue(int row, Role role) const
 	if (result_col < 0) {
 		return {};
 	}
-	return m_result.value(row, result_col);
+	return result_col;
+}
+
+QVariant StartListModel::roleValue(int row, Role role) const
+{
+	if (auto col = roleToColumn(role); col.has_value()) {
+		return m_result.value(row, col.value());
+	}
+	return {};
+}
+
+void StartListModel::onRunChanged(int run_id, const QVariant &record)
+{
+	if (record.isNull()) {
+		for (auto i = 0; i < rowCount(); ++i) {
+			if (roleValue(i, Role::RunId).toInt() == run_id) {
+				beginRemoveRows({}, i, i);
+				m_result.rows.removeAt(i);
+				endRemoveRows();
+			}
+		}
+	}
+	else {
+		auto rec = record.toMap();
+		for (auto i = 0; i < rowCount(); ++i) {
+			if (roleValue(i, Role::RunId).toInt() == run_id) {
+				for (const auto &[key, val] : rec.asKeyValueRange()) {
+					m_result.setValue(i, key, val);
+				}
+				auto ix = createIndex(i, 0);
+				emit dataChanged(ix, ix);
+			}
+		}
+	}
 }

@@ -53,6 +53,7 @@ void Application::connectToBroker(const QUrl &connection_url)
 		m_rpcConnection->deleteLater();
 	}
 	m_rpcConnection = new shv::iotqt::rpc::ClientConnection(this);
+	connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::rpcMessageReceived, this, &Application::onRpcMessageReceived);
 	connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerConnectedChanged, this, [this](bool is_connected) {
 		if (is_connected) {
 			subscribeChanges();
@@ -87,7 +88,7 @@ void Application::loadStyle()
 
 void Application::subscribeChanges()
 {
-	QString sig = "runChanged";
+	QString sig = "runchng";
 	auto *rpc_call = shv::iotqt::rpc::RpcCall::createSubscriptionRequest(m_rpcConnection, {}, sig, sig);
 	rpc_call->start();
 }
@@ -99,6 +100,21 @@ void Application::loadCurrentStageConfig()
 			m_currentStageConfig = shv::coreqt::rpc::rpcValueToQVariant(result).toMap();
 		}
 	);
+}
+
+void Application::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg)
+{
+	if (msg.isSignal()) {
+		//shvInfo() << "SIG---->" << msg.toCpon();
+		RpcSignal sig(msg);
+		if (sig.method().asString() == "runchng" && sig.source() == "runchng") {
+			const auto param = sig.params();
+			const auto &lst = param.asList();
+			auto run_id = lst.value(0).toInt();
+			auto record = lst.value(1);
+			emit runChanged(run_id, shv::coreqt::rpc::rpcValueToQVariant(record));
+		}
+	}
 }
 
 void Application::callShvMethod(const QString &shv_path,

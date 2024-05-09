@@ -15,8 +15,8 @@ public:
 
 	explicit RpcSqlResultModel(QObject *parent = nullptr);
 
-	int rowCount(const QModelIndex &) const override;
-	int columnCount(const QModelIndex &parent) const override;
+	int rowCount(const QModelIndex & = {}) const override;
+	int columnCount(const QModelIndex &parent = {}) const override;
 	QVariant data(const QModelIndex &index, int role) const override;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
@@ -31,14 +31,16 @@ class StartListModel : public RpcSqlResultModel
 
 	using Super = RpcSqlResultModel;
 public:
-	enum Role {CompetitorName = Qt::UserRole, Registration, ClassName, StartTime};
+	enum Role {RunId = Qt::UserRole, CompetitorName, Registration, ClassName, StartTime};
 
 	explicit StartListModel(QObject *parent = nullptr);
 
 	int columnCount(const QModelIndex &) const override { return 1; }
 	QVariant data(const QModelIndex &index, int role) const override;
 private:
+	std::optional<int> roleToColumn(Role role) const;
 	QVariant roleValue(int row, Role role) const;
+	void onRunChanged(int run_id, const QVariant &record);
 private:
 	mutable QMap<QString, int> m_nameToIndex;
 };

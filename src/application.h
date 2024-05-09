@@ -8,7 +8,7 @@
 #include <QFont>
 
 namespace shv::iotqt::rpc { class ClientConnection; }
-namespace shv::chainpack { class RpcValue; class RpcError; }
+namespace shv::chainpack { class RpcValue; class RpcError; class RpcMessage; }
 
 class AppCliOptions;
 class QWidget;
@@ -50,10 +50,13 @@ public:
 
 	Q_SIGNAL void settingsChanged();
 	void emitSettingsChanged() { emit settingsChanged(); }
+
+	Q_SIGNAL void runChanged(int run_id, const QVariant &record);
 private:
 	void loadStyle();
 	void subscribeChanges();
 	void loadCurrentStageConfig();
+	void onRpcMessageReceived(const shv::chainpack::RpcMessage &msg);
 private:
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	AppCliOptions *m_cliOptions = nullptr;
