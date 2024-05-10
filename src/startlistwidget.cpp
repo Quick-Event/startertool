@@ -51,7 +51,7 @@ void StartListWidget::reload()
 		param = QVariantMap {{"where", where}};
 	}
 	auto *app = Application::instance();
-	app->callShvApiMethod("event/currentStage/startList", "table", param, this,
+	app->callShvApiMethod("event/currentStage/runs", "table", param, this,
 		[this](const RpcValue &result) {
 			auto res = RpcSqlResult::fromRpcValue(result);
 			m_model->setResult(res);

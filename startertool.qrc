@@ -7,11 +7,9 @@
         <file>images/green-led.svg</file>
         <file>images/red-led.svg</file>
         <file>images/yellow-led.svg</file>
-        <file>images/scanning.svg</file>
-        <file>images/tunning.svg</file>
-        <file>images/data-analysis.svg</file>
         <file>images/connection.svg</file>
         <file>images/menu.svg</file>
+        <file>images/pencil.svg</file>
         <file>style/style.css</file>
 
     </qresource>

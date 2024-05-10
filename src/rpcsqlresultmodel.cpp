@@ -86,6 +86,14 @@ std::optional<int> StartListModel::roleToColumn(Role role) const
 		col_name = QStringLiteral("runs.id");
 		break;
 	}
+	case SiId: {
+		col_name = QStringLiteral("runs.siid");
+		break;
+	}
+	case CorridorTime: {
+		col_name = QStringLiteral("runs.corridorTime");
+		break;
+	}
 	}
 	if (!m_nameToIndex.contains(col_name)) {
 		if (auto ix = m_result.columnIndex(col_name); ix.has_value()) {

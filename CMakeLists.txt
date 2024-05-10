@@ -57,7 +57,7 @@ qt_add_executable(startertool
 	src/classfiltersettingspage.h src/classfiltersettingspage.cpp src/classfiltersettingspage.ui
 )
 
-target_link_libraries(startertool PUBLIC Qt::Widgets libshviotqt)
+target_link_libraries(startertool PUBLIC Qt::Widgets Qt::Svg libshviotqt)
 
 include(GNUInstallDirs)
 install(TARGETS startertool

@@ -31,7 +31,7 @@ class StartListModel : public RpcSqlResultModel
 
 	using Super = RpcSqlResultModel;
 public:
-	enum Role {RunId = Qt::UserRole, CompetitorName, Registration, ClassName, StartTime};
+	enum Role {RunId = Qt::UserRole, CompetitorName, Registration, ClassName, StartTime, CorridorTime, SiId};
 
 	explicit StartListModel(QObject *parent = nullptr);
 

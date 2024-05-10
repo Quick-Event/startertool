@@ -89,7 +89,8 @@ void Application::loadStyle()
 void Application::subscribeChanges()
 {
 	QString sig = "runchng";
-	auto *rpc_call = shv::iotqt::rpc::RpcCall::createSubscriptionRequest(m_rpcConnection, {}, sig, sig);
+	QString source = "record";
+	auto *rpc_call = shv::iotqt::rpc::RpcCall::createSubscriptionRequest(m_rpcConnection, {}, sig, source);
 	rpc_call->start();
 }
 
@@ -107,7 +108,7 @@ void Application::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg)
 	if (msg.isSignal()) {
 		//shvInfo() << "SIG---->" << msg.toCpon();
 		RpcSignal sig(msg);
-		if (sig.method().asString() == "runchng" && sig.source() == "runchng") {
+		if (sig.method().asString() == "runchng" && sig.source() == "record") {
 			const auto param = sig.params();
 			const auto &lst = param.asList();
 			auto run_id = lst.value(0).toInt();
