@@ -12,6 +12,7 @@ namespace shv::chainpack { class RpcValue; class RpcError; class RpcMessage; }
 
 class AppCliOptions;
 class QWidget;
+class MainWindow;
 
 class Application : public QApplication
 {
@@ -22,9 +23,11 @@ public:
 	static const QString DEFAULT_LOCALE;
 
 	Application(int &argc, char **argv, AppCliOptions* cli_opts);
-	~Application() override;
+	~Application() override = default;
 
 	static Application *instance() { return qobject_cast<Application*>(Super::instance()); }
+	MainWindow* mainWindow();
+
 	static void applyCssStyleClass(QWidget *widget, const QString &css_class_name);
 	AppCliOptions *cliOptions() { return m_cliOptions; }
 	bool isBrokerConnected() const;
@@ -52,6 +55,7 @@ public:
 	void emitSettingsChanged() { emit settingsChanged(); }
 
 	Q_SIGNAL void runChanged(int run_id, const QVariant &record);
+	void updateRun(int run_id, const QVariant &record);
 private:
 	void loadStyle();
 	void subscribeChanges();

@@ -39,7 +39,6 @@ else()
 	message(FATAL_ERROR "Qt not found")
 endif()
 
-
 qt_add_executable(startertool
 	src/application.cpp
 	src/appclioptions.cpp
@@ -52,11 +51,14 @@ qt_add_executable(startertool
 	src/settingswidget.cpp
 	src/settingspage.cpp
 	src/stagesettingspage.cpp
+	src/classfiltersettingspage.cpp
+	src/runwidget.cpp
+	src/startlisttableview.cpp
 
 	startertool.qrc
-	src/classfiltersettingspage.h src/classfiltersettingspage.cpp src/classfiltersettingspage.ui
 )
 
+target_include_directories(startertool PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(startertool PUBLIC Qt::Widgets Qt::Svg libshviotqt)
 
 include(GNUInstallDirs)

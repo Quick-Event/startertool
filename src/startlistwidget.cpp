@@ -1,13 +1,16 @@
 #include "startlistwidget.h"
 #include "ui_startlistwidget.h"
 
+#include "mainwindow.h"
 #include "startlistitemdelegate.h"
 #include "application.h"
 #include "rpcsqlresultmodel.h"
 #include "classfiltersettingspage.h"
+#include "runwidget.h"
 
 #include <QResizeEvent>
 #include <QScrollBar>
+#include <QTimer>
 
 using namespace shv::chainpack;
 using namespace shv::coreqt::data;
@@ -29,6 +32,11 @@ StartListWidget::StartListWidget(QWidget *parent) :
 		}
 	});
 	connect(app, &Application::settingsChanged, this, &StartListWidget::reload);
+	connect(ui->tableView, &StartListTableView::editButtonPressed, this, [this](int run_id) {
+		auto *widget = new RunWidget(m_model);
+		widget->load(run_id);
+		Application::instance()->mainWindow()->showDialogWidget(widget);
+	});
 }
 
 StartListWidget::~StartListWidget()
@@ -55,6 +63,7 @@ void StartListWidget::reload()
 		[this](const RpcValue &result) {
 			auto res = RpcSqlResult::fromRpcValue(result);
 			m_model->setResult(res);
+			QTimer::singleShot(10, this, &StartListWidget::updateHeadersSectionSizes);
 		}
 	);
 }

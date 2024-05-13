@@ -1,5 +1,6 @@
 #include "application.h"
 #include "appclioptions.h"
+#include "mainwindow.h"
 
 #include <shv/iotqt/rpc/clientconnection.h>
 #include <shv/coreqt/log.h>
@@ -35,9 +36,16 @@ Application::Application(int &argc, char **argv, AppCliOptions* cli_opts)
 	loadStyle();
 }
 
-Application::~Application()
+MainWindow *Application::mainWindow()
 {
-
+	const QWidgetList all_widgets = QApplication::allWidgets();
+	for (QWidget *w : all_widgets) {
+		if (auto *mw = qobject_cast<MainWindow*>(w)) {
+			return mw;
+		}
+	}
+	Q_ASSERT(false);
+	return nullptr;
 }
 
 bool Application::isBrokerConnected() const
@@ -71,6 +79,11 @@ void Application::connectToBroker(const QUrl &connection_url)
 QDateTime Application::currentStageStart() const
 {
 	return currentStageConfig().value("startDateTime").toDateTime();
+}
+
+void Application::updateRun(int run_id, const QVariant &record)
+{
+	callShvApiMethod("event/currentStage/runs", "setRecord", QVariantList{run_id, record});
 }
 
 void Application::loadStyle()

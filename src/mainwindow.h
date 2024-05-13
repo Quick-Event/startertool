@@ -18,7 +18,7 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow(QWidget *parent = nullptr);
 	~MainWindow() override;
-private:
+
 	void showDialogWidget(QWidget *widget);
 	void showError(const QString &msg, NecroLogLevel level);
 	void hideError() { showError({}, NecroLogLevel::Invalid); }

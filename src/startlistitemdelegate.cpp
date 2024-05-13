@@ -21,7 +21,8 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
 	auto line_height = option.rect.height()	/ 2;
 	int letter_width = line_height / 2;
-	painter->fillRect(option.rect, Qt::black);
+	constexpr auto BACKGROUND_COLOR = Qt::black;
+	painter->fillRect(option.rect, BACKGROUND_COLOR);
 	auto pen = painter->pen();
 	//auto brush = painter->brush();
 	pen.setColor(Qt::yellow);
@@ -95,6 +96,7 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 			QPixmap px(64, 64);
 			QSvgRenderer rnd(QStringLiteral(":/images/pencil.svg"));
 			QPainter p(&px);
+			p.fillRect(QRect(QPoint(), px.size()), BACKGROUND_COLOR);
 			rnd.render(&p);
 			return px;
 		}();

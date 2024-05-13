@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-class RpcSqlResultModel;
+class StartListModel;
 
 namespace Ui {
 class StartListWidget;
@@ -25,7 +25,7 @@ private:
 	void updateHeadersSectionSizes();
 private:
 	Ui::StartListWidget *ui;
-	RpcSqlResultModel *m_model;
+	StartListModel *m_model;
 };
 
 #endif // STARTLISTWIDGET_H

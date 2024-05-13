@@ -10,7 +10,9 @@
         <file>images/connection.svg</file>
         <file>images/menu.svg</file>
         <file>images/pencil.svg</file>
-        <file>style/style.css</file>
+        <file>images/back.svg</file>
+        <file>images/reload.svg</file>
 
+        <file>style/style.css</file>
     </qresource>
 </RCC>
