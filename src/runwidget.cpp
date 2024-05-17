@@ -10,12 +10,16 @@ RunWidget::RunWidget(StartListModel *model, QWidget *parent)
 	, m_model(model)
 {
 	ui->setupUi(this);
+	ui->corridorTime->setMinimumDateTime(QDateTime::fromSecsSinceEpoch(0));
 	connect(ui->btBack, &QAbstractButton::clicked, this, [this]() {
 		save();
 		deleteLater();
 	});
 	connect(ui->btReload, &QAbstractButton::clicked, this, [this]() {
 		load(m_runId);
+	});
+	connect(ui->btSetCorridorTimeNow, &QAbstractButton::clicked, this, [this]() {
+		ui->corridorTime->setDateTime(QDateTime::currentDateTime());
 	});
 }
 
@@ -41,15 +45,23 @@ void RunWidget::load(int run_id)
 		}
 		{
 			auto corridor = m_model->roleValue(i, StartListModel::Role::CorridorTime).toDateTime();
-			ui->corridorTime->setText(corridor.toString("hh:mm:ss"));
+			ui->corridorTime->setDateTime(corridor.isValid()? corridor: QDateTime::fromSecsSinceEpoch(0));
 		}
 	}
 }
 
 void RunWidget::save()
 {
+	QMap<StartListModel::Role, QVariant> record;
 	auto siid = ui->siId->value();
 	if (siid != m_model->recordValue(m_runId, StartListModel::SiId).toInt()) {
-		m_model->setRecord(m_runId, QMap<StartListModel::Role, QVariant>{{StartListModel::SiId, siid}});
+		record.insert(StartListModel::SiId, siid);
+	}
+	auto corridor_time = ui->corridorTime->dateTime();
+	if (corridor_time != m_model->recordValue(m_runId, StartListModel::CorridorTime).toDateTime()) {
+		record.insert(StartListModel::CorridorTime, corridor_time);
+	}
+	if (!record.isEmpty()) {
+		m_model->setRecord(m_runId, record);
 	}
 }

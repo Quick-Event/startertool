@@ -77,7 +77,7 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 		auto pen = painter->pen();
 		pen.setColor(Qt::magenta);
 		painter->setPen(pen);
-		painter->drawText(rect, dt.toString(Qt::ISODate));
+		painter->drawText(rect, dt.toString("hh:mm:ss"));
 	}
 	//{
 	//	auto siid = index.data(StartListModel::Role::SiId).toInt();
