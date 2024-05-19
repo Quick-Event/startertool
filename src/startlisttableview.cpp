@@ -1,5 +1,5 @@
 #include "startlisttableview.h"
-#include "rpcsqlresultmodel.h"
+#include "startlistmodel.h"
 
 #include <shv/coreqt/log.h>
 

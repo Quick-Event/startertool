@@ -4,9 +4,11 @@
 #include "mainwindow.h"
 #include "startlistitemdelegate.h"
 #include "application.h"
-#include "rpcsqlresultmodel.h"
+#include "startlistmodel.h"
 #include "classfiltersettingspage.h"
 #include "runwidget.h"
+
+#include <shv/coreqt/log.h>
 
 #include <QResizeEvent>
 #include <QScrollBar>
@@ -61,6 +63,7 @@ void StartListWidget::reload()
 	auto *app = Application::instance();
 	app->callShvApiMethod("event/currentStage/runs", "table", param, this,
 		[this](const RpcValue &result) {
+		// shvInfo() << result.toCpon("  ");
 			auto res = RpcSqlResult::fromRpcValue(result);
 			m_model->setResult(res);
 			QTimer::singleShot(10, this, &StartListWidget::updateHeadersSectionSizes);

@@ -2,7 +2,7 @@
 #include "ui_runwidget.h"
 
 #include "application.h"
-#include "rpcsqlresultmodel.h"
+#include "startlistmodel.h"
 
 RunWidget::RunWidget(StartListModel *model, QWidget *parent)
 	: QWidget(parent)
@@ -53,15 +53,11 @@ void RunWidget::load(int run_id)
 void RunWidget::save()
 {
 	QMap<StartListModel::Role, QVariant> record;
-	auto siid = ui->siId->value();
-	if (siid != m_model->recordValue(m_runId, StartListModel::SiId).toInt()) {
-		record.insert(StartListModel::SiId, siid);
-	}
+
+	record.insert(StartListModel::SiId, ui->siId->value());
 	auto corridor_time = ui->corridorTime->dateTime();
-	if (corridor_time != m_model->recordValue(m_runId, StartListModel::CorridorTime).toDateTime()) {
-		record.insert(StartListModel::CorridorTime, corridor_time);
-	}
-	if (!record.isEmpty()) {
-		m_model->setRecord(m_runId, record);
-	}
+	auto v = corridor_time == QDateTime::fromSecsSinceEpoch(0)? QVariant(): QVariant(corridor_time);
+	record.insert(StartListModel::CorridorTime, v);
+
+	m_model->setRecord(m_runId, record);
 }

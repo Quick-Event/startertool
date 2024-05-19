@@ -138,12 +138,17 @@ void Application::callShvMethod(const QString &shv_path,
 								std::function<void (const RpcValue &)> success_callback,
 								std::function<void (const RpcError &)> error_callback)
 {
+	shvLogFuncFrame() << shv_path << method;
 	if(isBrokerConnected()) {
 		auto *rpcc = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
 				->setShvPath(shv_path)
 				->setMethod(method)
 				->setParams(shv::coreqt::rpc::qVariantToRpcValue(params));
 		if (rpcc) {
+			if ((success_callback || error_callback) && !context) {
+				shvError() << "Cannot use calbacks without context object set.";
+				return;
+			}
 			if(success_callback) {
 				connect(rpcc, &shv::iotqt::rpc::RpcCall::result, context, [success_callback](const ::RpcValue &result) {
 					success_callback(result);
@@ -155,7 +160,7 @@ void Application::callShvMethod(const QString &shv_path,
 				});
 			}
 			else {
-				connect(rpcc, &shv::iotqt::rpc::RpcCall::error, context, [shv_path, method](const ::RpcError &error) {
+				connect(rpcc, &shv::iotqt::rpc::RpcCall::error, [shv_path, method](const ::RpcError &error) {
 					shvError() << "RPC method call error, path:" << shv_path << "method:" << method << "error:" << error.toString();
 				});
 			}

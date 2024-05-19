@@ -1,6 +1,6 @@
 #include "startlistitemdelegate.h"
 
-#include "rpcsqlresultmodel.h"
+#include "startlistmodel.h"
 #include "application.h"
 
 #include <QPainter>
