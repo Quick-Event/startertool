@@ -73,6 +73,8 @@ void StartListModel::setRoleValue(int row, Role role, const QVariant &val)
 	if (auto o_col_name = roleToName(role); o_col_name.has_value()) {
 		auto col_name = o_col_name.value();
 		m_result.setValue(row, col_name, val);
+		QModelIndex ix = createIndex(row, 0);
+		emit dataChanged(ix, ix);
 	}
 }
 
@@ -101,12 +103,18 @@ void StartListModel::setRecord(int run_id, const QMap<StartListModel::Role, QVar
 		auto row = o_row.value();
 		QVariantMap chngmap;
 		for (const auto &[role, val] : record.asKeyValueRange()) {
+			shvDebug() << "val:" << val.toString() << "is valid:" << val.isValid() << "is null:" << val.isNull() << "type:" << val.typeName();
 			auto v1 = roleValue(row, role);
 			setRoleValue(row, role, val);
 			auto v2 = roleValue(row, role);
-			shvInfo() << v1.toString() << v1.typeName() << "vs:" << v2.toString() << v2.typeName();
+			shvDebug() << "v1 val:" << v1.toString() << "is valid:" << v1.isValid() << "is null:" << v1.isNull() << "type:" << v1.typeName();
+			shvDebug() << "v2 val:" << v2.toString() << "is valid:" << v2.isValid() << "is null:" << v2.isNull() << "type:" << v2.typeName();
+			if ((!v1.isValid() || v1.isNull()) && (!v2.isValid() || v2.isNull())) {
+				continue;
+			}
 			if (v1 != v2) {
 				if (auto colname = roleToName(role); colname.has_value()) {
+					shvDebug() << "chng:" << v2.toString() << v2.typeName();
 					chngmap[colname.value()] = v2;
 				}
 			}
@@ -125,23 +133,15 @@ QVariant StartListModel::retypeValue(const QVariant &val, Role role) const
 	if (auto mt = m_roleTypes.value(role); mt > 0) {
 		switch (mt) {
 		case QMetaType::Type::QDateTime: {
-			if (val.metaType() == QMetaType::fromType<QString>()) {
-				// auto val2 = QDateTime::fromString(val.toString());
-				auto val2 = val.toDateTime();
-				return val2;
+			auto dt = val.toDateTime();
+			if (!dt.isValid()) {
+				return {};
 			}
-			break;
+			return dt;
 		}
 		default:
 			break;
 		}
-		//auto val2 = val;
-		//if (val2.convert(mt)) {
-		//	return val2;
-		//}
-		//else {
-		//	shvWarning() << "Cannot convert:" << val.toString() << val.typeName() << "to:" << mt.name();
-		//}
 	}
 	return val;
 }

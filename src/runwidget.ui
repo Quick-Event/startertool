@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>392</width>
+    <width>466</width>
     <height>528</height>
    </rect>
   </property>
@@ -55,11 +55,12 @@
       </property>
       <item>
        <widget class="QToolButton" name="btBack">
+        <property name="icon">
+         <iconset resource="../startertool.qrc">
+          <normaloff>:/images/back.svg</normaloff>:/images/back.svg</iconset>
+        </property>
         <property name="autoRaise">
          <bool>true</bool>
-        </property>
-        <property name="arrowType">
-         <enum>Qt::LeftArrow</enum>
         </property>
        </widget>
       </item>
@@ -214,9 +215,18 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btClearCorridorTime">
+          <property name="icon">
+           <iconset resource="../startertool.qrc">
+            <normaloff>:/images/clear.svg</normaloff>:/images/clear.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btSetCorridorTimeNow">
-          <property name="text">
-           <string>Now</string>
+          <property name="icon">
+           <iconset resource="../startertool.qrc">
+            <normaloff>:/images/clock-new.svg</normaloff>:/images/clock-new.svg</iconset>
           </property>
          </widget>
         </item>

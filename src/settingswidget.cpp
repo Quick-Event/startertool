@@ -20,6 +20,12 @@ SettingsWidget::SettingsWidget(QWidget *parent)
 {
 	ui->setupUi(this);
 	m_buttonGroup = new QButtonGroup(this);
+	connect(ui->btBack, &QAbstractButton::clicked, this, [this]() {
+		if(int page_index = m_buttonGroup->checkedId(); page_index >= 0) {
+			page(page_index)->save();
+		}
+		deleteLater();
+	});
 	connect(m_buttonGroup, &QButtonGroup::idToggled, this, [this](int page_index, bool checked) {
 		shvDebug() << "id toggled:" << page_index << checked;
 		if(checked) {
@@ -38,14 +44,6 @@ SettingsWidget::SettingsWidget(QWidget *parent)
 SettingsWidget::~SettingsWidget()
 {
 	delete ui;
-}
-
-void SettingsWidget::on_buttonBox_rejected()
-{
-	if(int page_index = m_buttonGroup->checkedId(); page_index >= 0) {
-		page(page_index)->save();
-	}
-	deleteLater();
 }
 
 SettingsPage *SettingsWidget::page(int page_index)

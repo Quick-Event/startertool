@@ -21,11 +21,19 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 
 	auto line_height = option.rect.height()	/ 2;
 	int letter_width = line_height / 2;
+
+	auto corridor_time = index.data(StartListModel::Role::CorridorTime).toDateTime();
+
+	constexpr auto TEXT_COLOR = Qt::yellow;
+	constexpr auto STARTED_TEXT_COLOR = Qt::white;
 	constexpr auto BACKGROUND_COLOR = Qt::black;
-	painter->fillRect(option.rect, BACKGROUND_COLOR);
+	constexpr auto STARTED_BACKGROUND_COLOR = Qt::darkGreen;
+	constexpr auto CORRIDOR_TIME_COLOR = Qt::yellow;
+	painter->fillRect(option.rect, corridor_time.isValid()? STARTED_BACKGROUND_COLOR: BACKGROUND_COLOR);
+	auto text_color = corridor_time.isValid()? STARTED_TEXT_COLOR: TEXT_COLOR;
 	auto pen = painter->pen();
 	//auto brush = painter->brush();
-	pen.setColor(Qt::yellow);
+	pen.setColor(text_color);
 	painter->setPen(pen);
 	painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
 	auto name_offset = 9 * letter_width;
@@ -71,13 +79,12 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 		painter->drawText(option.rect, start.toString("hh:mm:ss"));
 	}
 	{
-		auto dt = index.data(StartListModel::Role::CorridorTime).toDateTime();
 		auto rect = option.rect;
 		rect.moveTop(rect.center().y());
 		auto pen = painter->pen();
-		pen.setColor(Qt::magenta);
+		pen.setColor(CORRIDOR_TIME_COLOR);
 		painter->setPen(pen);
-		painter->drawText(rect, dt.toString("hh:mm:ss"));
+		painter->drawText(rect, corridor_time.toString("hh:mm:ss"));
 	}
 	//{
 	//	auto siid = index.data(StartListModel::Role::SiId).toInt();

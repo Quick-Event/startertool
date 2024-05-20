@@ -12,6 +12,8 @@
         <file>images/pencil.svg</file>
         <file>images/back.svg</file>
         <file>images/reload.svg</file>
+        <file>images/clock-new.svg</file>
+        <file>images/clear.svg</file>
 
         <file>style/style.css</file>
     </qresource>

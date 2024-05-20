@@ -20,10 +20,6 @@ public:
 	~SettingsWidget();
 
 	void addPage(SettingsPage *page);
-private slots:
-	void on_buttonBox_rejected();
-	//ReportsSettingsPage *reportsSettingsPage() const;
-	//CardReaderSettingsPage *cardReaderSettingsPage() const;
 private:
 	SettingsPage* page(int page_index);
 private:
