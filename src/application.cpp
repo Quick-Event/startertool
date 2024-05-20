@@ -5,6 +5,7 @@
 #include <shv/iotqt/rpc/clientconnection.h>
 #include <shv/coreqt/log.h>
 #include <shv/chainpack/rpc.h>
+#include <shv/iotqt/rpc/rpccall.h>
 
 #ifdef Q_OS_WIN
 	#include <QStyleFactory>
@@ -14,8 +15,7 @@
 #include <QFile>
 #include <QStyle>
 #include <QUrlQuery>
-
-#include <shv/iotqt/rpc/rpccall.h>
+#include <QSettings>
 
 using namespace shv::chainpack;
 
@@ -46,6 +46,14 @@ MainWindow *Application::mainWindow()
 	}
 	Q_ASSERT(false);
 	return nullptr;
+}
+
+UiSettings Application::uiSettings()
+{
+	QSettings settings;
+	return UiSettings {
+		.toggleCorridorTime = settings.value(UiSettings::TOGGLE_CORRIDOR_TIME).toBool(),
+	};
 }
 
 bool Application::isBrokerConnected() const

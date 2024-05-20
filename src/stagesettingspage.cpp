@@ -4,10 +4,9 @@
 #include "application.h"
 
 StageSettingsPage::StageSettingsPage(QWidget *parent)
-	: Super(parent)
+	: Super(tr("Stage"), parent)
 	, ui(new Ui::StageSettingsPage)
 {
-	m_caption = tr("Stage");
 	ui->setupUi(this);
 }
 

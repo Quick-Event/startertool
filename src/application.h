@@ -14,6 +14,13 @@ class AppCliOptions;
 class QWidget;
 class MainWindow;
 
+struct UiSettings
+{
+	static constexpr auto TOGGLE_CORRIDOR_TIME = "ui/toggleCorridorTime";
+
+	bool toggleCorridorTime = false;
+};
+
 class Application : public QApplication
 {
 	Q_OBJECT
@@ -27,6 +34,8 @@ public:
 
 	static Application *instance() { return qobject_cast<Application*>(Super::instance()); }
 	MainWindow* mainWindow();
+
+	UiSettings uiSettings();
 
 	static void applyCssStyleClass(QWidget *widget, const QString &css_class_name);
 	AppCliOptions *cliOptions() { return m_cliOptions; }

@@ -4,6 +4,7 @@
 #include "settingspage.h"
 #include "stagesettingspage.h"
 #include "classfiltersettingspage.h"
+#include "uisettingspage.h"
 
 #include <shv/coreqt/log.h>
 
@@ -12,7 +13,6 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QTimer>
-
 
 SettingsWidget::SettingsWidget(QWidget *parent)
 	: QWidget(parent)
@@ -37,6 +37,7 @@ SettingsWidget::SettingsWidget(QWidget *parent)
 		}
 	});
 
+	addPage(new UiSettingsPage());
 	addPage(new StageSettingsPage());
 	addPage(new ClassFilterSettingsPage());
 }

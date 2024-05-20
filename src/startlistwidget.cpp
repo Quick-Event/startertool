@@ -45,11 +45,16 @@ StartListWidget::StartListWidget(QWidget *parent) :
 			auto row = o_row.value();
 			auto corridor_time = m_model->roleValue(row, StartListModel::Role::CorridorTime).toDateTime();
 			shvDebug() << "row:" << run_id << "dt:" << corridor_time.toString();
+			auto ui_settings = Application::instance()->uiSettings();
 			QMap<StartListModel::Role, QVariant> record;
-			//auto v = corridor_time.isValid()? QVariant(): QVariant(QDateTime::currentDateTime());
-			//record.insert(StartListModel::CorridorTime, v);
-			if (!corridor_time.isValid()) {
-				record.insert(StartListModel::CorridorTime, QDateTime::currentDateTime());
+			if (ui_settings.toggleCorridorTime) {
+				auto v = corridor_time.isValid()? QVariant(): QVariant(QDateTime::currentDateTime());
+				record.insert(StartListModel::CorridorTime, v);
+			}
+			else {
+				if (!corridor_time.isValid()) {
+					record.insert(StartListModel::CorridorTime, QDateTime::currentDateTime());
+				}
 			}
 			m_model->setRecord(run_id, record);
 		}

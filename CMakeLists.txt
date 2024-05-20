@@ -49,12 +49,14 @@ qt_add_executable(startertool
 	src/startlistitemdelegate.cpp
 	src/rpcsqlresultmodel.cpp
 	src/settingswidget.cpp
-	src/settingspage.cpp
-	src/stagesettingspage.cpp
-	src/classfiltersettingspage.cpp
 	src/runwidget.cpp
 	src/startlisttableview.cpp
 	src/startlistmodel.cpp
+
+	src/settingspage.cpp
+	src/classfiltersettingspage.cpp
+	src/uisettingspage.cpp
+	src/stagesettingspage.cpp
 
 	startertool.qrc
 )

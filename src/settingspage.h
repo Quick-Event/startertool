@@ -9,7 +9,7 @@ class SettingsPage : public QWidget
 	Q_OBJECT
 
 public:
-	explicit SettingsPage(QWidget *parent = nullptr);
+	explicit SettingsPage(const QString &caption, QWidget *parent = nullptr);
 
 	QString caption() const { return m_caption; }
 

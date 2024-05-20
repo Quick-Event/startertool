@@ -11,10 +11,9 @@
 using namespace shv::chainpack;
 
 ClassFilterSettingsPage::ClassFilterSettingsPage(QWidget *parent)
-	: Super(parent)
+	: Super(tr("Filter"), parent)
 	, ui(new Ui::ClassFilterSettingsPage)
 {
-	m_caption = tr("Filter");
 	ui->setupUi(this);
 	ui->buttonBar->hide();
 
