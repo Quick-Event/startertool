@@ -14,6 +14,8 @@
         <file>images/reload.svg</file>
         <file>images/clock-new.svg</file>
         <file>images/clear.svg</file>
+        <file>images/find.svg</file>
+        <file>images/here.svg</file>
 
         <file>style/style.css</file>
     </qresource>

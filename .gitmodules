@@ -7,3 +7,6 @@
 [submodule "3rdparty/libshv"]
 	path = 3rdparty/libshv
 	url = git@github.com:silicon-heaven/libshv.git
+[submodule "3rdparty/siutils"]
+	path = 3rdparty/siutils
+	url = git@github.com:Quick-Event/siutils.git

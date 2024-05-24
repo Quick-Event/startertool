@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18.4)
 
 # set(WITH_QE_SHVAPI OFF CACHE BOOL "Build SHV API service with QuickEvent")
-project(startertool LANGUAGES CXX)
+project(startertool LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -33,7 +33,7 @@ if(Qt6_FOUND)
 	add_subdirectory(3rdparty/necrolog)
 	# add_subdirectory(3rdparty/quickbox/libqf/libqfcore)
 	# add_subdirectory(3rdparty/quickbox/libquickevent)
-	# add_subdirectory(3rdparty/quickbox/libsiut)
+	add_subdirectory(3rdparty/siutils)
 	add_subdirectory(3rdparty/libshv)
 else()
 	message(FATAL_ERROR "Qt not found")
@@ -57,12 +57,13 @@ qt_add_executable(startertool
 	src/classfiltersettingspage.cpp
 	src/uisettingspage.cpp
 	src/stagesettingspage.cpp
+	src/serialportsettingspage.cpp
 
 	startertool.qrc
 )
 
 target_include_directories(startertool PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(startertool PUBLIC Qt::Widgets Qt::Svg libshviotqt)
+target_link_libraries(startertool PUBLIC Qt::Widgets Qt::Svg libshviotqt libsiut)
 
 include(GNUInstallDirs)
 install(TARGETS startertool

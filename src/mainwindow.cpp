@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	ui->lblError->hide();
+	ui->frmFind->hide();
 
 	auto *startlist_widget = new StartListWidget();
 	ui->stackedWidget->addWidget(startlist_widget);
@@ -52,6 +53,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	//});
 	auto *app = Application::instance();
 	connect(app, &Application::showErrorRq, this, &MainWindow::showError);
+	connect(ui->btFind, &QAbstractButton::clicked, this, [this](bool checked) {
+		shvInfo() << checked;
+		ui->frmFind->setVisible(checked);
+	});
 	connect(app, &Application::brokerConnectedChanged, this, [this](bool is_connected, const QString &errmsg) {
 		if (errmsg.isEmpty()) {
 			if (is_connected) {

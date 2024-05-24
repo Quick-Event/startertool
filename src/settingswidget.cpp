@@ -1,6 +1,7 @@
 #include "settingswidget.h"
 #include "ui_settingswidget.h"
 
+#include "serialportsettingspage.h"
 #include "settingspage.h"
 #include "stagesettingspage.h"
 #include "classfiltersettingspage.h"
@@ -40,6 +41,7 @@ SettingsWidget::SettingsWidget(QWidget *parent)
 	addPage(new UiSettingsPage());
 	addPage(new StageSettingsPage());
 	addPage(new ClassFilterSettingsPage());
+	addPage(new SerialPortSettingsPage());
 }
 
 SettingsWidget::~SettingsWidget()
