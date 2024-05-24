@@ -1,6 +1,8 @@
 #include "serialportsettingspage.h"
 #include "ui_serialportsettingspage.h"
 
+#include <shv/coreqt/rpc.h>
+
 #include <siut/sidevicedriver.h>
 
 #include <QSerialPort>
@@ -42,7 +44,7 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 					comport->write(data);
 				});
 				siut::SiTaskStationConfig *cmd = new siut::SiTaskStationConfig();
-				connect(cmd, &siut::SiTaskStationConfig::finished, this, [comport, append_log](bool ok, QVariant result) {
+				connect(cmd, &siut::SiTaskStationConfig::finished, this, [this, comport, sidriver, append_log](bool ok, QVariant result) {
 					if(ok) {
 						siut::SiStationConfig cfg(result.toMap());
 						QString msg = cfg.toString();
@@ -51,6 +53,11 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 					else {
 						append_log(tr("Device %1 is not SI reader").arg(comport->portName()));
 					}
+					connect(sidriver, &siut::DeviceDriver::siTaskFinished, this, [append_log](int task_type, QVariant result) {
+						auto task_name = siut::SiTask::typeToString(static_cast<siut::SiTask::Type>(task_type));
+						auto msg = shv::coreqt::rpc::qVariantToRpcValue(result).toCpon("  ");
+						append_log(tr("SI task finished - type: %1, result: %2").arg(task_name).arg(QString::fromStdString(msg)));
+					});
 				});
 				sidriver->setSiTask(cmd);
 			}
