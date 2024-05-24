@@ -1,10 +1,13 @@
 #include "serialportsettingspage.h"
 #include "ui_serialportsettingspage.h"
 
+#include <siut/sidevicedriver.h>
+
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QSettings>
 #include <QLineEdit>
+#include <QTimer>
 
 SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 	: Super(tr("Serial port"), parent)
@@ -22,25 +25,48 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 				//ui->txtError->appendPlainText("\n");
 			};
 			auto device = ui->lstDevice->currentData().toString();
-			auto *pport = new QSerialPort(device, this);
-			pport->setBaudRate(38400);
-			pport->setDataBits(QSerialPort::Data8);
-			pport->setParity(QSerialPort::NoParity);
-			pport->setStopBits(QSerialPort::OneStop);
+			auto *comport = new QSerialPort(device, this);
+			comport->setBaudRate(38400);
+			comport->setDataBits(QSerialPort::Data8);
+			comport->setParity(QSerialPort::NoParity);
+			comport->setStopBits(QSerialPort::OneStop);
 			append_log(tr("Opening %1 ...").arg(device));
-			if (pport->open(QIODevice::ReadWrite)) {
-				append_log(tr("Ok"));
-				connect(pport, &QSerialPort::readyRead, this, [pport, append_log]() {
-					auto ba = pport->readAll();
-					auto hex = ba.toHex();
-					hex.replace("02", "<STX>");
-					hex.replace("03", "<ETX>");
-					append_log(hex);
+			if (comport->open(QIODevice::ReadWrite)) {
+				append_log(tr("Loading SI station info ..."));
+				auto *sidriver = new siut::DeviceDriver(comport);
+				connect(comport, &QSerialPort::readyRead, this, [comport, sidriver]() {
+					QByteArray ba = comport->readAll();
+					sidriver->processData(ba);
 				});
+				connect(sidriver, &siut::DeviceDriver::dataToSend, comport, [comport](const QByteArray &data) {
+					comport->write(data);
+				});
+				siut::SiTaskStationConfig *cmd = new siut::SiTaskStationConfig();
+				connect(cmd, &siut::SiTaskStationConfig::finished, this, [comport, append_log](bool ok, QVariant result) {
+					if(ok) {
+						siut::SiStationConfig cfg(result.toMap());
+						QString msg = cfg.toString();
+						append_log(tr("SI reader config:%1").arg(msg));
+					}
+					else {
+						append_log(tr("Device %1 is not SI reader").arg(comport->portName()));
+					}
+				});
+				sidriver->setSiTask(cmd);
 			}
 			else {
-				append_log(tr("Error: %1").arg(pport->errorString()));
+				append_log(tr("Error: %1").arg(comport->errorString()));
 			}
+			//if (pport->open(QIODevice::ReadWrite)) {
+			//	append_log(tr("Ok"));
+			//	connect(pport, &QSerialPort::readyRead, this, [pport, append_log]() {
+			//		auto ba = pport->readAll();
+			//		auto hex = ba.toHex();
+			//		hex.replace("02", "<STX>");
+			//		hex.replace("03", "<ETX>");
+			//		append_log(hex);
+			//	});
+			//}
 		}
 		else {
 			ui->txtError->hide();
