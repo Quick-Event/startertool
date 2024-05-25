@@ -23,7 +23,10 @@ public:
 	void showError(const QString &msg, NecroLogLevel level);
 	void hideError() { showError({}, NecroLogLevel::Invalid); }
 private:
+	void initReader();
+private:
 	Ui::MainWindow *ui;
 	QDateTime m_currentTime;
+	// QSerialPort *m_serialPort = nullptr;
 };
 

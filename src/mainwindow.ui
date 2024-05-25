@@ -73,9 +73,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>PushButton</string>
+       <widget class="QLineEdit" name="edReadSiId">
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

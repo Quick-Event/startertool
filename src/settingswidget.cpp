@@ -1,11 +1,7 @@
 #include "settingswidget.h"
 #include "ui_settingswidget.h"
 
-#include "serialportsettingspage.h"
 #include "settingspage.h"
-#include "stagesettingspage.h"
-#include "classfiltersettingspage.h"
-#include "uisettingspage.h"
 
 #include <shv/coreqt/log.h>
 
@@ -37,11 +33,6 @@ SettingsWidget::SettingsWidget(QWidget *parent)
 			page(page_index)->save();
 		}
 	});
-
-	addPage(new UiSettingsPage());
-	addPage(new StageSettingsPage());
-	addPage(new ClassFilterSettingsPage());
-	addPage(new SerialPortSettingsPage());
 }
 
 SettingsWidget::~SettingsWidget()

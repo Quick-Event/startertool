@@ -6,12 +6,18 @@
 #include "loginwidget.h"
 #include "startlistwidget.h"
 
+#include "serialportsettingspage.h"
+#include "stagesettingspage.h"
+#include "classfiltersettingspage.h"
+#include "uisettingspage.h"
+
 #include <shv/coreqt/log.h>
 
 #include <QSettings>
 #include <QPushButton>
 #include <QMenu>
 #include <QTimer>
+#include <QSerialPort>
 
 namespace rpc = shv::iotqt::rpc;
 
@@ -41,6 +47,16 @@ MainWindow::MainWindow(QWidget *parent) :
 		auto *a = new QAction(tr("Settings"));
 		connect(a, &QAction::triggered, this, [this]() {
 			auto *widget = new SettingsWidget();
+
+			widget->addPage(new UiSettingsPage());
+			widget->addPage(new StageSettingsPage());
+			widget->addPage(new ClassFilterSettingsPage());
+			auto *serial_port_settings_page = new SerialPortSettingsPage();
+			widget->addPage(serial_port_settings_page);
+			connect(serial_port_settings_page, &SerialPortSettingsPage::serialPortSettingsChanged, this, [this]() {
+				initReader();
+			});
+
 			showDialogWidget(widget);
 			connect(widget, &SettingsWidget::destroyed, Application::instance(), &Application::emitSettingsChanged);
 
@@ -133,6 +149,33 @@ void MainWindow::showError(const QString &msg, NecroLogLevel level)
 		}
 		ui->lblError->setText(msg);
 		ui->lblError->show();
+	}
+}
+
+void MainWindow::initReader()
+{
+	return;
+	delete findChild<QSerialPort*>();
+	auto settings = SerialPortSettingsPage::loadSettings();
+	auto *comport = new QSerialPort(settings.deviceName, this);
+	comport->setBaudRate(settings.baudRate);
+	comport->setDataBits(settings.dataBits);
+	comport->setParity(settings.parity);
+	comport->setStopBits(settings.stopBits);
+	shvInfo() << "Opening" << settings.deviceName;
+	ui->edReadSiId->setText({});
+	if (comport->open(QIODevice::ReadWrite)) {
+		ui->edReadSiId->setText(settings.deviceName);
+		connect(comport, &QSerialPort::readyRead, this, [this, comport]() {
+			QByteArray ba = comport->readAll();
+			auto hex = ba.toHex();
+			hex.replace("02", "<STX>");
+			hex.replace("03", "<ETX>");
+			shvInfo() << hex;
+		});
+	}
+	else {
+		ui->edReadSiId->setText(comport->errorString());
 	}
 }
 
