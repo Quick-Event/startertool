@@ -66,6 +66,23 @@ StartListWidget::~StartListWidget()
 	delete ui;
 }
 
+void StartListWidget::onCardRead(unsigned int siid)
+{
+	shvDebug() << "SI id:" << siid;
+	for (auto row = 0; row < m_model->rowCount(); ++row) {
+		auto siid2 = m_model->roleValue(row, StartListModel::Role::SiId).toUInt();
+		if (siid == siid2) {
+			auto run_id = m_model->roleValue(row, StartListModel::Role::RunId).toInt();
+			//shvDebug() << "row:" << run_id << "dt:" << corridor_time.toString();
+			QMap<StartListModel::Role, QVariant> record;
+			record.insert(StartListModel::CorridorTime, QDateTime::currentDateTime());
+			m_model->setRecord(run_id, record);
+			auto ix = m_model->index(row, 0);
+			ui->tableView->scrollTo(ix);
+		}
+	}
+}
+
 void StartListWidget::resizeEvent(QResizeEvent *event)
 {
 	Super::resizeEvent(event);

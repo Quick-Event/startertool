@@ -17,7 +17,7 @@ public:
 	explicit StartListWidget(QWidget *parent = nullptr);
 	~StartListWidget();
 
-	// QWidget interface
+	void onCardRead(unsigned siid);
 protected:
 	void resizeEvent(QResizeEvent *event) override;
 private:

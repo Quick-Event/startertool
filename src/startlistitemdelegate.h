@@ -15,8 +15,6 @@ class StartListItemDelegate : public QStyledItemDelegate
 public:
 	StartListItemDelegate(QObject *parent = nullptr);
 	~StartListItemDelegate() override = default;
-
-	// QAbstractItemDelegate interface
 public:
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };

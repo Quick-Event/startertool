@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->frmFind->hide();
 
 	auto *startlist_widget = new StartListWidget();
+	connect(this, &MainWindow::cardRead, startlist_widget, &StartListWidget::onCardRead);
 	ui->stackedWidget->addWidget(startlist_widget);
 
 	auto *menu = new QMenu(this);
@@ -178,6 +179,7 @@ void MainWindow::initCardReader()
 				if (cmd != si::Command::SICardRemoved) {
 					ui->edReadSiId->setStyleSheet({});
 					ui->edReadSiId->setText(QString::number(siid));
+					emit cardRead(siid);
 				}
 			}
 			catch(const std::exception &e) {
