@@ -99,7 +99,7 @@ void SerialPortSettingsPage::save()
 {
 	auto old = loadSettings();
 	QSettings settings;
-	settings.setValue(DEVICE, ui->lstDevice->currentText());
+	settings.setValue(DEVICE, ui->lstDevice->currentData().toString());
 	settings.setValue(ENABLED, ui->grpSerialPort->isChecked());
 	auto current = loadSettings();
 	if (!(old == current)) {

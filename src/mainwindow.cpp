@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "si.h"
 #include "settingswidget.h"
 #include "application.h"
 #include "loginwidget.h"
@@ -54,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
 			auto *serial_port_settings_page = new SerialPortSettingsPage();
 			widget->addPage(serial_port_settings_page);
 			connect(serial_port_settings_page, &SerialPortSettingsPage::serialPortSettingsChanged, this, [this]() {
-				initReader();
+				initCardReader();
 			});
 
 			showDialogWidget(widget);
@@ -106,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	auto *login_widget = new LoginWidget(LoginWidget::AutoconnectEnabled::Yes);
 	showDialogWidget(login_widget);
+	initCardReader();
 }
 
 MainWindow::~MainWindow()
@@ -152,11 +154,13 @@ void MainWindow::showError(const QString &msg, NecroLogLevel level)
 	}
 }
 
-void MainWindow::initReader()
+void MainWindow::initCardReader()
 {
-	return;
 	delete findChild<QSerialPort*>();
 	auto settings = SerialPortSettingsPage::loadSettings();
+	if (!settings.enabled) {
+		return;
+	}
 	auto *comport = new QSerialPort(settings.deviceName, this);
 	comport->setBaudRate(settings.baudRate);
 	comport->setDataBits(settings.dataBits);
@@ -165,17 +169,26 @@ void MainWindow::initReader()
 	shvInfo() << "Opening" << settings.deviceName;
 	ui->edReadSiId->setText({});
 	if (comport->open(QIODevice::ReadWrite)) {
+		ui->edReadSiId->setStyleSheet({});
 		ui->edReadSiId->setText(settings.deviceName);
 		connect(comport, &QSerialPort::readyRead, this, [this, comport]() {
-			QByteArray ba = comport->readAll();
-			auto hex = ba.toHex();
-			hex.replace("02", "<STX>");
-			hex.replace("03", "<ETX>");
-			shvInfo() << hex;
+			auto data = comport->readAll();
+			try {
+				auto [siid, serie, cmd] = si::parseDetectMessageData(data);
+				if (cmd != si::Command::SICardRemoved) {
+					ui->edReadSiId->setStyleSheet({});
+					ui->edReadSiId->setText(QString::number(siid));
+				}
+			}
+			catch(const std::exception &e) {
+				ui->edReadSiId->setStyleSheet("background: salmon; color: black");
+				ui->edReadSiId->setText(e.what());
+			}
 		});
 	}
 	else {
-		ui->edReadSiId->setText(comport->errorString());
+		ui->edReadSiId->setStyleSheet("background: salmon; color: black");
+		ui->edReadSiId->setText(tr("%1 open error: %2").arg(settings.deviceName).arg(comport->errorString()));
 	}
 }
 

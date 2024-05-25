@@ -23,7 +23,7 @@ public:
 	void showError(const QString &msg, NecroLogLevel level);
 	void hideError() { showError({}, NecroLogLevel::Invalid); }
 private:
-	void initReader();
+	void initCardReader();
 private:
 	Ui::MainWindow *ui;
 	QDateTime m_currentTime;
