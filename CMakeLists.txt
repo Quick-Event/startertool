@@ -51,7 +51,7 @@ qt_add_executable(startertool
 	src/runwidget.cpp
 	src/startlisttableview.cpp
 	src/startlistmodel.cpp
-	src/si.h
+	src/si.cpp
 
 	src/settingspage.cpp
 	src/classfiltersettingspage.cpp

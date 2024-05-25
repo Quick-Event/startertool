@@ -1,5 +1,9 @@
 #pragma once
 
+#include <QByteArrayView>
+
+#include <tuple>
+
 namespace si {
 
 static constexpr char STX = 0x02;
@@ -24,5 +28,7 @@ enum Command {
 
 	//DriverInfo=0x1000 /// Driver info (SI commands are only 8 bit long)
 };
+
+std::tuple<unsigned, unsigned, Command> parseDetectMessageData(QByteArrayView data);
 
 }
