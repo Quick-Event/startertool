@@ -33,7 +33,6 @@ if(Qt6_FOUND)
 	add_subdirectory(3rdparty/necrolog)
 	# add_subdirectory(3rdparty/quickbox/libqf/libqfcore)
 	# add_subdirectory(3rdparty/quickbox/libquickevent)
-	add_subdirectory(3rdparty/siutils)
 	add_subdirectory(3rdparty/libshv)
 else()
 	message(FATAL_ERROR "Qt not found")
@@ -52,6 +51,7 @@ qt_add_executable(startertool
 	src/runwidget.cpp
 	src/startlisttableview.cpp
 	src/startlistmodel.cpp
+	src/si.h
 
 	src/settingspage.cpp
 	src/classfiltersettingspage.cpp
@@ -63,7 +63,7 @@ qt_add_executable(startertool
 )
 
 target_include_directories(startertool PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(startertool PUBLIC Qt::Widgets Qt::Svg libshviotqt libsiut)
+target_link_libraries(startertool PUBLIC Qt::Widgets Qt::Svg libshviotqt)
 
 include(GNUInstallDirs)
 install(TARGETS startertool

@@ -1,9 +1,9 @@
 #include "serialportsettingspage.h"
 #include "ui_serialportsettingspage.h"
 
-#include <shv/coreqt/rpc.h>
+#include "si.h"
 
-#include <siut/sidevicedriver.h>
+#include <shv/coreqt/rpc.h>
 
 #include <QSerialPort>
 #include <QSerialPortInfo>
@@ -43,13 +43,11 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 					if (data.isEmpty()) {
 						return;
 					}
-					static constexpr char STX = 0x02;
-					static constexpr char ETX = 0x03;
-					if (data[0] != STX) {
+					if (data[0] != si::STX) {
 						append_log("STX not received");
 						return;
 					}
-					if (data[data.size() - 1] != ETX) {
+					if (data[data.size() - 1] != si::ETX) {
 						append_log("ETX not received");
 						return;
 					}
@@ -82,14 +80,14 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 					unsigned card_serie = 0;
 					unsigned siid = 0;
 					auto cmd = static_cast<uint8_t>(data[1]);
-					switch (static_cast<siut::SIMessageData::Command>(cmd)) {
-					case siut::SIMessageData::Command:: SICard5Detected:
-					case siut::SIMessageData::Command:: SICard6Detected:
-					case siut::SIMessageData::Command:: SICard8Detected:
+					switch (static_cast<si::Command>(cmd)) {
+					case si::Command:: SICard5Detected:
+					case si::Command:: SICard6Detected:
+					case si::Command:: SICard8Detected:
 						card_serie = bytes_to_uint(data.mid(5, 1));
 						siid = bytes_to_uint(data.mid(6, 3));
 						break;
-					case siut::SIMessageData::Command:: SICardRemoved:
+					case si::Command:: SICardRemoved:
 						return;
 					default:
 						append_log(tr("Invalid command %1 received").arg(byte_to_hex(cmd)));
