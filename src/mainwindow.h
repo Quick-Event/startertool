@@ -22,8 +22,6 @@ public:
 	void showDialogWidget(QWidget *widget);
 	void showError(const QString &msg, NecroLogLevel level);
 	void hideError() { showError({}, NecroLogLevel::Invalid); }
-
-	Q_SIGNAL void cardRead(unsigned siid);
 private:
 	void initCardReader();
 private:

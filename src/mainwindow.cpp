@@ -31,8 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->lblError->hide();
 	ui->frmFind->hide();
 
+	auto *app = Application::instance();
 	auto *startlist_widget = new StartListWidget();
-	connect(this, &MainWindow::cardRead, startlist_widget, &StartListWidget::onCardRead);
+	connect(app, &Application::cardReadChanged, startlist_widget, &StartListWidget::onCardRead);
 	ui->stackedWidget->addWidget(startlist_widget);
 
 	auto *menu = new QMenu(this);
@@ -69,7 +70,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	//	auto *login_widget = new LoginWidget();
 	//	showDialogWidget(login_widget);
 	//});
-	auto *app = Application::instance();
 	connect(app, &Application::showErrorRq, this, &MainWindow::showError);
 	connect(ui->btFind, &QAbstractButton::clicked, this, [this](bool checked) {
 		shvInfo() << checked;
@@ -168,7 +168,7 @@ void MainWindow::initCardReader()
 				if (cmd != si::Command::SICardRemoved) {
 					ui->edReadSiId->setStyleSheet({});
 					ui->edReadSiId->setText(QString::number(siid));
-					emit cardRead(siid);
+					Application::instance()->setCardRead(siid);
 				}
 			}
 			catch(const std::exception &e) {

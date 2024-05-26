@@ -108,6 +108,14 @@ void Application::updateRun(int run_id, const QVariant &record)
 	callShvApiMethod("event/currentStage/runs", "setRecord", QVariantList{run_id, record});
 }
 
+void Application::setCardRead(unsigned int siid)
+{
+	if (siid == m_cardRead)
+		return;
+	m_cardRead = siid;
+	emit cardReadChanged(m_cardRead);
+}
+
 void Application::loadStyle()
 {
 	QFile file(":/style/style.css");

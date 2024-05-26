@@ -75,6 +75,11 @@ public:
 
 	QDateTime currentTime() const { return m_currentTime; }
 	Q_SIGNAL void currentTimeChanged(const QDateTime &current_time);
+
+	Q_SIGNAL void cardReadChanged(unsigned siid);
+	unsigned cardRead() const { return m_cardRead; }
+	void setCardRead(unsigned siid);
+
 private:
 	void loadStyle();
 	void subscribeChanges();
@@ -86,5 +91,6 @@ private:
 	QString m_eventName;
 	StageConfig m_currentStageConfig;
 	QDateTime m_currentTime;
+	unsigned m_cardRead = 0;
 };
 

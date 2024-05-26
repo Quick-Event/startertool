@@ -18,7 +18,6 @@ StartListItemDelegate::StartListItemDelegate(QObject *parent)
 void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	painter->save();
-
 	auto line_height = option.rect.height()	/ 2;
 	int letter_width = line_height / 2;
 	int corridor_status_width = letter_width;
@@ -98,9 +97,22 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 		painter->drawText(rect, name);
 	}
 	{
+		auto card_read_siid = Application::instance()->cardRead();
 		auto rect = option.rect;
 		rect.translate(registration_offset, option.rect.height() / 2);
-		auto text = QString::number(index.data(StartListModel::Role::SiId).toInt());
+		rect.setRight(option.rect.right() - option.rect.height());
+		rect.setHeight(option.rect.height() / 2);
+		auto siid = index.data(StartListModel::Role::SiId).toUInt();
+		auto text = QString::number(siid);
+		if (card_read_siid == siid) {
+			painter->fillRect(rect, Qt::yellow);
+			auto f = painter->font();
+			f.setBold(true);
+			painter->setFont(f);
+			auto pen = painter->pen();
+			pen.setColor(Qt::black);
+			painter->setPen(pen);
+		}
 		painter->drawText(rect, text);
 	}
 	{
