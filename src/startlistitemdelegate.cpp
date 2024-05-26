@@ -18,6 +18,7 @@ StartListItemDelegate::StartListItemDelegate(QObject *parent)
 void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 	painter->save();
+	auto is_selected = index.data(StartListModel::Role::IsSelectedRow).toBool();
 	auto line_height = option.rect.height()	/ 2;
 	int letter_width = line_height / 2;
 	int corridor_status_width = letter_width;
@@ -45,12 +46,19 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 	}
 
 	constexpr auto TEXT_COLOR = Qt::yellow;
+	constexpr auto SELECTED_COLOR = Qt::magenta;
+	constexpr auto SELECTED_BACKGROUND_COLOR = Qt::darkGray;
 	constexpr auto STARTED_TEXT_COLOR = Qt::white;
 	constexpr auto BACKGROUND_COLOR = Qt::black;
 	constexpr auto STARTED_BACKGROUND_COLOR = Qt::darkGreen;
 	constexpr auto CORRIDOR_TIME_COLOR = Qt::yellow;
 
-	painter->fillRect(option.rect, corridor_time.isValid()? STARTED_BACKGROUND_COLOR: BACKGROUND_COLOR);
+	auto bg_color = BACKGROUND_COLOR;
+	if (is_selected)
+		bg_color = SELECTED_BACKGROUND_COLOR;
+	if (corridor_time.isValid())
+		bg_color = STARTED_BACKGROUND_COLOR;
+	painter->fillRect(option.rect, bg_color);
 	auto text_color = corridor_time.isValid()? STARTED_TEXT_COLOR: TEXT_COLOR;
 	auto pen = painter->pen();
 	//auto brush = painter->brush();
@@ -73,7 +81,18 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 			painter->fillRect(rect, c);
 		}
 	}
-	painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
+	if (is_selected) {
+		painter->save();
+		auto pen = painter->pen();
+		pen.setColor(SELECTED_COLOR);
+		pen.setWidth(5);
+		painter->setPen(pen);
+		painter->drawRect(option.rect);
+		painter->restore();
+	}
+	else {
+		painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
+	}
 	auto time_offset = corridor_status_width;
 	auto name_offset = time_offset + 9 * letter_width;
 	auto registration_offset = option.rect.width() - option.rect.height() - 8 * letter_width;

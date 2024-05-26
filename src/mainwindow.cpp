@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "startlistmodel.h"
 #include "si.h"
 #include "settingswidget.h"
 #include "application.h"
@@ -72,8 +73,68 @@ MainWindow::MainWindow(QWidget *parent) :
 	//});
 	connect(app, &Application::showErrorRq, this, &MainWindow::showError);
 	connect(ui->btFind, &QAbstractButton::clicked, this, [this](bool checked) {
-		shvInfo() << checked;
+		auto select_matched_row = [this]() {
+			auto *model = findChild<StartListModel*>();
+			Q_ASSERT(model);
+			auto *w = findChild<StartListWidget*>();
+			Q_ASSERT(w);
+			if (m_matchContext.currentMatchedRow >= m_matchContext.matchedRows.size())
+				m_matchContext.currentMatchedRow = 0;
+			if (m_matchContext.currentMatchedRow < 0)
+				m_matchContext.currentMatchedRow = m_matchContext.matchedRows.size() - 1;
+			if (m_matchContext.currentMatchedRow >= m_matchContext.matchedRows.size()) {
+				m_matchContext.currentMatchedRow = m_matchContext.matchedRows.size() - 1;
+			}
+			if (m_matchContext.currentMatchedRow < 0) {
+				m_matchContext.currentMatchedRow = 0;
+			}
+			if (m_matchContext.matchedRows.isEmpty()) {
+				ui->lblFind->setText({});
+				w->setSelectedRow({});
+			}
+			else {
+				ui->lblFind->setText(QStringLiteral("%1/%2").arg(m_matchContext.currentMatchedRow + 1).arg(m_matchContext.matchedRows.size()));
+				//shvInfo() << "set selected row:" << m_matchContext.currentMatchedRow << "/" << m_matchContext.matchedRows.size();
+				w->setSelectedRow(m_matchContext.matchedRows.value(m_matchContext.currentMatchedRow));
+			}
+		};
 		ui->frmFind->setVisible(checked);
+		if (checked) {
+			ui->lblFind->setText({});
+			ui->edFind->clear();
+			ui->edFind->setFocus();
+			connect(ui->edFind, &QLineEdit::textChanged, this, [this, select_matched_row](const QString &txt) {
+				auto *model = findChild<StartListModel*>();
+				Q_ASSERT(model);
+				m_matchContext.matchedRows = model->fullTextSearch(txt);
+				m_matchContext.currentMatchedRow = 0;
+				//shvInfo() << txt << "matched rows count:" << m_matchContext.matchedRows.size();
+				//for(auto r : m_matchContext.matchedRows) {
+				//	shvInfo() << "row:" << r;
+				//}
+				select_matched_row();
+			});
+			connect(ui->btFindNext, &QPushButton::clicked, this, [this, select_matched_row]() {
+				if (m_matchContext.matchedRows.isEmpty())
+					return;
+				m_matchContext.currentMatchedRow++;
+				select_matched_row();
+			});
+			connect(ui->btFindPrev, &QPushButton::clicked, this, [this, select_matched_row]() {
+				if (m_matchContext.matchedRows.isEmpty())
+					return;
+				m_matchContext.currentMatchedRow--;
+				select_matched_row();
+			});
+		}
+		else {
+			ui->edFind->disconnect();
+			ui->btFindNext->disconnect();
+			ui->btFindPrev->disconnect();
+			m_matchContext.matchedRows.clear();
+			m_matchContext.currentMatchedRow = 0;
+			select_matched_row();
+		}
 	});
 	connect(app, &Application::brokerConnectedChanged, this, [this](bool is_connected, const QString &errmsg) {
 		if (errmsg.isEmpty()) {

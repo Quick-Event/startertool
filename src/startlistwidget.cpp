@@ -66,6 +66,15 @@ StartListWidget::~StartListWidget()
 	delete ui;
 }
 
+void StartListWidget::setSelectedRow(std::optional<int> row)
+{
+	m_model->setSelectedRow(row);
+	if (row.has_value()) {
+		auto ix = m_model->index(row.value(), 0);
+		ui->tableView->scrollTo(ix);
+	}
+}
+
 void StartListWidget::onCardRead(unsigned int siid)
 {
 	shvDebug() << "SI id:" << siid;
@@ -77,8 +86,7 @@ void StartListWidget::onCardRead(unsigned int siid)
 			QMap<StartListModel::Role, QVariant> record;
 			record.insert(StartListModel::CorridorTime, QDateTime::currentDateTime());
 			m_model->setRecord(run_id, record);
-			auto ix = m_model->index(row, 0);
-			ui->tableView->scrollTo(ix);
+			setSelectedRow(row);
 		}
 	}
 }

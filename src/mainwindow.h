@@ -26,5 +26,11 @@ private:
 	void initCardReader();
 private:
 	Ui::MainWindow *ui;
+	struct MatchContext
+	{
+		QList<int> matchedRows;
+		int currentMatchedRow = 0;
+	};
+	MatchContext m_matchContext;
 };
 

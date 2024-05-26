@@ -64,19 +64,27 @@ std::optional<int> StartListModel::roleToColumn(Role role) const
 std::optional<QString> StartListModel::roleToName(Role role) const
 {
 	switch (role) {
+	case Role::RunId: return QStringLiteral("runs.id");
 	case Role::CompetitorName: return QStringLiteral("competitorName");
 	case Role::Registration: return QStringLiteral("competitors.registration");
 	case Role::ClassName: return QStringLiteral("classes.name");
 	case Role::StartTime: return QStringLiteral("runs.starttimems");
-	case Role::RunId: return QStringLiteral("runs.id");
 	case Role::SiId: return QStringLiteral("runs.siid");
 	case Role::CorridorTime: return QStringLiteral("runs.corridorTime");
+	case Role::IsSelectedRow: throw std::runtime_error("IsSelectedRow role has not column");
+	break;
 	}
 	return {};
 }
 
 QVariant StartListModel::roleValue(int row, Role role) const
 {
+	if (role == Role::IsSelectedRow) {
+		if (m_selectedRow.has_value()) {
+			return m_selectedRow.value() == row;
+		}
+		return false;
+	}
 	if (auto col = roleToColumn(role); col.has_value()) {
 		auto v = m_result.value(row, col.value());
 		v = retypeValue(v, role);
@@ -140,6 +148,37 @@ void StartListModel::setRecord(int run_id, const QMap<StartListModel::Role, QVar
 			emit recordChanged(run_id, chngmap);
 		}
 	}
+}
+
+void StartListModel::setSelectedRow(std::optional<int> row)
+{
+	if (row == m_selectedRow)
+		return;
+	if (m_selectedRow.has_value()) {
+		auto ix = index(m_selectedRow.value(), 0);
+		emit dataChanged(ix, ix);
+	}
+	m_selectedRow = row;
+	if (m_selectedRow.has_value()) {
+		auto ix = index(m_selectedRow.value(), 0);
+		emit dataChanged(ix, ix);
+	}
+}
+
+QList<int> StartListModel::fullTextSearch(const QString &txt) const
+{
+	if (txt.length() < 3)
+		return {};
+	QMap<int, int> ret;
+	for (auto i = 0; i < rowCount(); ++i) {
+		for (auto role : {CompetitorName, Registration, SiId}) {
+			auto s = roleValue(i, role).toString();
+			if (s.contains(txt, Qt::CaseInsensitive)) {
+				ret[i] = role;
+			}
+		}
+	}
+	return ret.keys();
 }
 
 QVariant StartListModel::retypeValue(const QVariant &val, Role role) const

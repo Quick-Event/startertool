@@ -184,7 +184,14 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="toolButton">
+        <widget class="QLabel" name="lblFind">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="btFindNext">
          <property name="text">
           <string>PushButton</string>
          </property>
@@ -197,7 +204,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QToolButton" name="toolButton_2">
+        <widget class="QToolButton" name="btFindPrev">
          <property name="text">
           <string>PushButton</string>
          </property>
