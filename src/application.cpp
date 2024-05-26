@@ -16,6 +16,7 @@
 #include <QStyle>
 #include <QUrlQuery>
 #include <QSettings>
+#include <QTimer>
 
 using namespace shv::chainpack;
 
@@ -34,6 +35,19 @@ Application::Application(int &argc, char **argv, AppCliOptions* cli_opts)
 #endif
 
 	loadStyle();
+	{
+		auto *tm = new QTimer(this);
+		connect(tm, &QTimer::timeout, this, [this]() {
+			auto dt = QDateTime::currentDateTime();
+			auto tm = dt.time();
+			if (tm.second() != m_currentTime.time().second()) {
+				auto tm = dt.time();
+				m_currentTime = QDateTime(dt.date(), QTime(tm.hour(), tm.minute(), tm.second()));
+				emit currentTimeChanged(dt);
+			}
+		});
+		tm->start(100);
+	}
 }
 
 MainWindow *Application::mainWindow()
@@ -86,7 +100,7 @@ void Application::connectToBroker(const QUrl &connection_url)
 
 QDateTime Application::currentStageStart() const
 {
-	return currentStageConfig().value("startDateTime").toDateTime();
+	return currentStageConfig().startTime;
 }
 
 void Application::updateRun(int run_id, const QVariant &record)
@@ -103,8 +117,6 @@ void Application::loadStyle()
 	else {
 		setStyleSheet(file.readAll());
 	}
-
-	file.close();
 }
 
 void Application::subscribeChanges()
@@ -119,7 +131,12 @@ void Application::loadCurrentStageConfig()
 {
 	callShvApiMethod("event/currentStage/config", Rpc::METH_GET, {}, this,
 		[this](const RpcValue &result) {
-			m_currentStageConfig = shv::coreqt::rpc::rpcValueToQVariant(result).toMap();
+			auto config = shv::coreqt::rpc::rpcValueToQVariant(result).toMap();
+			m_currentStageConfig.stageNumber = config.value("id").toInt();
+			//m_currentStageConfig.startTime = config.value("startDateTime").toDateTime();
+			auto dtm = QDateTime::currentDateTime();
+			auto tm = dtm.time();
+			m_currentStageConfig.startTime = QDateTime(dtm.date(), QTime(tm.hour(), tm.minute(), 0)).addSecs(-30*60);
 		}
 	);
 }

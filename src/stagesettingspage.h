@@ -2,6 +2,8 @@
 
 #include "settingspage.h"
 
+#include <QDateTime>
+
 namespace Ui {
 class StageSettingsPage;
 }

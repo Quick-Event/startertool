@@ -3,6 +3,8 @@
 
 #include "rpcsqlresultmodel.h"
 
+#include <QDateTime>
+
 class StartListModel : public RpcSqlResultModel
 {
 	Q_OBJECT
@@ -31,6 +33,7 @@ private:
 private:
 	const QMap<Role, QMetaType::Type> m_roleTypes;
 	mutable QMap<QString, int> m_nameToIndex;
+	QDateTime m_corridorTime;
 };
 
 #endif // STARTLISTMODEL_H

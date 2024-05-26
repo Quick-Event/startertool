@@ -8,8 +8,25 @@ StartListModel::StartListModel(QObject *parent)
 	: Super(parent)
 	, m_roleTypes{{Role::CorridorTime, QMetaType::Type::QDateTime}}
 {
-	connect(Application::instance(), &Application::runChanged, this, &StartListModel::onRunChanged);
+	auto *app = Application::instance();
+	connect(app, &Application::runChanged, this, &StartListModel::onRunChanged);
 	connect(this, &StartListModel::recordChanged, Application::instance(), &Application::updateRun);
+	connect(app, &Application::currentTimeChanged, this, [this](const QDateTime &current_time) {
+		if (m_corridorTime.time().second() != current_time.time().second()) {
+			m_corridorTime = current_time;
+			auto line_time = current_time.addSecs(-60);
+			//shvInfo() << "UPDATE===================" << m_corridorTime;
+			//ui->tableView->update();
+			for (auto row = 0; row < rowCount(); ++row) {
+				auto start = roleValue(row, Role::StartTime).toDateTime();
+				auto diff = start.secsTo(line_time);
+				if (diff >= 0 && diff < (60 * 4)) {
+					auto ix = index(row, 0);
+					emit dataChanged(ix, ix);
+				}
+			}
+		}
+	});
 }
 
 QVariant StartListModel::data(const QModelIndex &index, int role) const

@@ -21,6 +21,13 @@ struct UiSettings
 	bool toggleCorridorTime = false;
 };
 
+
+struct StageConfig
+{
+	int stageNumber = 0;
+	QDateTime startTime;
+};
+
 class Application : public QApplication
 {
 	Q_OBJECT
@@ -53,7 +60,7 @@ public:
 	void connectToBroker(const QUrl &connection_url);
 	Q_SIGNAL void brokerConnectedChanged(bool is_connected, const QString &error);
 
-	QVariantMap currentStageConfig() const { return m_currentStageConfig; }
+	const StageConfig& currentStageConfig() const { return m_currentStageConfig; }
 	QDateTime currentStageStart() const;
 
 	Q_SIGNAL void showErrorRq(const QString &msg, NecroLogLevel level);
@@ -65,6 +72,9 @@ public:
 
 	Q_SIGNAL void runChanged(int run_id, const QVariant &record);
 	void updateRun(int run_id, const QVariant &record);
+
+	QDateTime currentTime() const { return m_currentTime; }
+	Q_SIGNAL void currentTimeChanged(const QDateTime &current_time);
 private:
 	void loadStyle();
 	void subscribeChanges();
@@ -74,6 +84,7 @@ private:
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	AppCliOptions *m_cliOptions = nullptr;
 	QString m_eventName;
-	QVariantMap m_currentStageConfig;
+	StageConfig m_currentStageConfig;
+	QDateTime m_currentTime;
 };
 

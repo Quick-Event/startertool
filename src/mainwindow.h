@@ -28,7 +28,5 @@ private:
 	void initCardReader();
 private:
 	Ui::MainWindow *ui;
-	QDateTime m_currentTime;
-	// QSerialPort *m_serialPort = nullptr;
 };
 

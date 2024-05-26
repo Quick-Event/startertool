@@ -17,9 +17,9 @@ StageSettingsPage::~StageSettingsPage()
 
 void StageSettingsPage::load()
 {
-	auto config = Application::instance()->currentStageConfig();
-	ui->stageNumber->setText(config.value("id").toString());
-	ui->startTime->setText(config.value("startDateTime").toDateTime().toString(Qt::ISODate));
+	const auto& config = Application::instance()->currentStageConfig();
+	ui->stageNumber->setText(QString::number(config.stageNumber));
+	ui->startTime->setDateTime(config.startTime);
 }
 
 void StageSettingsPage::save()

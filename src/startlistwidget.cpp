@@ -92,15 +92,16 @@ void StartListWidget::resizeEvent(QResizeEvent *event)
 void StartListWidget::reload()
 {
 	auto class_filter = ClassFilterSettingsPage::checkedClasses();
-	QVariant param;
+	QVariantMap param;
+	param["orderBy"] = "runs.startTimeMs";
 	if (class_filter.enabled) {
 		auto where = QStringLiteral("classes.name IN ('%1')").arg(class_filter.checkedClasses.join("','"));
-		param = QVariantMap {{"where", where}};
+		param["where"] = where;
 	}
 	auto *app = Application::instance();
 	app->callShvApiMethod("event/currentStage/runs", "table", param, this,
 		[this](const RpcValue &result) {
-		// shvInfo() << result.toCpon("  ");
+			//shvInfo() << result.toCpon("  ");
 			auto res = RpcSqlResult::fromRpcValue(result);
 			m_model->setResult(res);
 			QTimer::singleShot(10, this, &StartListWidget::updateHeadersSectionSizes);

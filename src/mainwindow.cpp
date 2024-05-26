@@ -91,20 +91,9 @@ MainWindow::MainWindow(QWidget *parent) :
 			showError(errmsg, NecroLogLevel::Error);
 		}
 	});
-	{
-		auto *tm = new QTimer(this);
-		connect(tm, &QTimer::timeout, this, [this]() {
-			auto dt = QDateTime::currentDateTime();
-			auto tm = dt.time();
-			if (tm.second() != m_currentTime.time().second()) {
-				m_currentTime = dt;
-				//auto ms = tm.msec();
-				//shvInfo() << ms << dt.toString(Qt::ISODate);
-				ui->lblCurrentTime->setText(m_currentTime.toString("hh:mm:ss"));
-			}
-		});
-		tm->start(100);
-	}
+	connect(app, &Application::currentTimeChanged, this, [this](const QDateTime &current_time) {
+		ui->lblCurrentTime->setText(current_time.toString("hh:mm:ss"));
+	});
 
 	auto *login_widget = new LoginWidget(LoginWidget::AutoconnectEnabled::Yes);
 	showDialogWidget(login_widget);

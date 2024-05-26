@@ -35,13 +35,6 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="startTime">
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
@@ -54,6 +47,13 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="1" column="1">
+    <widget class="QDateTimeEdit" name="startTime">
+     <property name="displayFormat">
+      <string>yyyy-MM-dd HH:mm:ss</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
