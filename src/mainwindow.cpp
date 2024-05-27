@@ -210,6 +210,7 @@ void MainWindow::initCardReader()
 	delete findChild<QSerialPort*>();
 	auto settings = SerialPortSettingsPage::loadSettings();
 	if (!settings.enabled) {
+		ui->edReadSiId->hide();
 		return;
 	}
 	auto *comport = new QSerialPort(settings.deviceName, this);

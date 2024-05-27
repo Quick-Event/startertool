@@ -14,14 +14,6 @@ class AppCliOptions;
 class QWidget;
 class MainWindow;
 
-struct UiSettings
-{
-	static constexpr auto TOGGLE_CORRIDOR_TIME = "ui/toggleCorridorTime";
-
-	bool toggleCorridorTime = false;
-};
-
-
 struct StageConfig
 {
 	int stageNumber = 0;
@@ -41,8 +33,6 @@ public:
 
 	static Application *instance() { return qobject_cast<Application*>(Super::instance()); }
 	MainWindow* mainWindow();
-
-	UiSettings uiSettings();
 
 	static void applyCssStyleClass(QWidget *widget, const QString &css_class_name);
 	AppCliOptions *cliOptions() { return m_cliOptions; }
@@ -80,6 +70,7 @@ public:
 	unsigned cardRead() const { return m_cardRead; }
 	void setCardRead(unsigned siid);
 
+	void playSound(const QString &file);
 private:
 	void loadStyle();
 	void subscribeChanges();

@@ -6,6 +6,7 @@
 #include "application.h"
 #include "startlistmodel.h"
 #include "classfiltersettingspage.h"
+#include "uisettingspage.h"
 #include "runwidget.h"
 
 #include <shv/coreqt/log.h>
@@ -45,7 +46,7 @@ StartListWidget::StartListWidget(QWidget *parent) :
 			auto row = o_row.value();
 			auto corridor_time = m_model->roleValue(row, StartListModel::Role::CorridorTime).toDateTime();
 			shvDebug() << "row:" << run_id << "dt:" << corridor_time.toString();
-			auto ui_settings = Application::instance()->uiSettings();
+			auto ui_settings = UiSettingsPage::loadSettings();
 			QMap<StartListModel::Role, QVariant> record;
 			if (ui_settings.toggleCorridorTime) {
 				auto v = corridor_time.isValid()? QVariant(): QVariant(QDateTime::currentDateTime());

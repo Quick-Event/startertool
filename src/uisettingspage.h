@@ -3,6 +3,13 @@
 
 #include "settingspage.h"
 
+struct UiSettings
+{
+	bool toggleCorridorTime = false;
+	QString soundCardInserted;
+	QString soundCorridorTimeError;
+};
+
 namespace Ui {
 class UiSettingsPage;
 }
@@ -15,6 +22,8 @@ class UiSettingsPage : public SettingsPage
 public:
 	explicit UiSettingsPage(QWidget *parent = nullptr);
 	~UiSettingsPage();
+
+	static UiSettings loadSettings();
 
 protected:
 	void load() override;

@@ -18,12 +18,13 @@ if (WIN32)
 endif (WIN32)
 
 set(USE_QT6 ON)
+set(LIBSHV_WITH_WEBSOCKETS OFF CACHE BOOL "")
 set(LIBSHV_WITH_BROKER OFF CACHE BOOL "")
 set(LIBSHV_WITH_VISU OFF CACHE BOOL "")
 set(BUILD_TESTING OFF CACHE BOOL "")
 set(BUILD_SHV_UTILS OFF CACHE BOOL "")
 
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui Svg SerialPort Network WebSockets LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui Svg SerialPort Network Multimedia LinguistTools)
 
 if(Qt6_FOUND)
 	set(CMAKE_AUTOMOC ON)
@@ -63,7 +64,7 @@ qt_add_executable(startertool
 )
 
 target_include_directories(startertool PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(startertool PUBLIC Qt::Widgets Qt::Svg libshviotqt)
+target_link_libraries(startertool PUBLIC Qt::Widgets Qt::Svg Qt::Multimedia libshviotqt)
 
 include(GNUInstallDirs)
 install(TARGETS startertool

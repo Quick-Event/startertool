@@ -22,6 +22,58 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Sound</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="chkSoundCardInserted">
+        <property name="text">
+         <string>Card inserted</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="btPlayCardInserted">
+        <property name="icon">
+         <iconset resource="../startertool.qrc">
+          <normaloff>:/images/play.svg</normaloff>:/images/play.svg</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="chkSoundCorridorTimeError">
+        <property name="text">
+         <string>Corridor time error</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="btPlayCorridorTimeError">
+        <property name="icon">
+         <iconset resource="../startertool.qrc">
+          <normaloff>:/images/play.svg</normaloff>:/images/play.svg</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -36,6 +88,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../startertool.qrc"/>
+ </resources>
  <connections/>
 </ui>

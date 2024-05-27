@@ -17,6 +17,8 @@
 #include <QUrlQuery>
 #include <QSettings>
 #include <QTimer>
+#include <QMediaPlayer>
+#include <QAudioOutput>
 
 using namespace shv::chainpack;
 
@@ -60,14 +62,6 @@ MainWindow *Application::mainWindow()
 	}
 	Q_ASSERT(false);
 	return nullptr;
-}
-
-UiSettings Application::uiSettings()
-{
-	QSettings settings;
-	return UiSettings {
-		.toggleCorridorTime = settings.value(UiSettings::TOGGLE_CORRIDOR_TIME).toBool(),
-	};
 }
 
 bool Application::isBrokerConnected() const
@@ -114,6 +108,22 @@ void Application::setCardRead(unsigned int siid)
 		return;
 	m_cardRead = siid;
 	emit cardReadChanged(m_cardRead);
+}
+
+void Application::playSound(const QString &file)
+{
+	auto *player = findChild<QMediaPlayer*>();
+	if (!player) {
+		player = new QMediaPlayer(this);
+		auto *audio_output = new QAudioOutput(player);
+		audio_output->setVolume(50);
+		player->setAudioOutput(audio_output);
+		connect(player, &QMediaPlayer::errorOccurred, [file](QMediaPlayer::Error error, const QString &error_string) {
+			shvError() << file << "Media player error:" << static_cast<int>(error) << error_string;
+		});
+	}
+	player->setSource(QUrl(file));
+	player->play();
 }
 
 void Application::loadStyle()
