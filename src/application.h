@@ -70,6 +70,11 @@ public:
 	unsigned cardRead() const { return m_cardRead; }
 	void setCardRead(unsigned siid);
 
+	enum class Alert {
+		CardInserted,
+		CorridorTimeCheckError,
+	};
+	void playAlert(Alert alert);
 	void playSound(const QString &file);
 private:
 	void loadStyle();

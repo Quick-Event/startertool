@@ -34,6 +34,9 @@ StartListWidget::StartListWidget(QWidget *parent) :
 			reload();
 		}
 	});
+	connect(m_model, &StartListModel::corridorTimeCheckError, []() {
+		Application::instance()->playAlert(Application::Alert::CorridorTimeCheckError);
+	});
 	connect(app, &Application::settingsChanged, this, &StartListWidget::reload);
 	connect(ui->tableView, &StartListTableView::editButtonPressed, this, [this](int run_id) {
 		auto *widget = new RunWidget(m_model);

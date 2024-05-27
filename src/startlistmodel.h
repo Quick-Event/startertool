@@ -11,7 +11,8 @@ class StartListModel : public RpcSqlResultModel
 
 	using Super = RpcSqlResultModel;
 public:
-	enum Role {RunId = Qt::UserRole, CompetitorName, Registration, ClassName, StartTime, CorridorTime, SiId, IsSelectedRow};
+	enum Role {RunId = Qt::UserRole, CompetitorName, Registration, ClassName, StartTime, CorridorTime, SiId, StartDateTime, IsSelectedRow, Corridor};
+	enum CorridorStage {CEarly, C3, C2, C1, CStarted};
 
 	explicit StartListModel(QObject *parent = nullptr);
 
@@ -26,6 +27,8 @@ public:
 	void setRecord(int run_id, const QMap<Role, QVariant> &record);
 	Q_SIGNAL void recordChanged(int run_id, const QVariant &record);
 
+	Q_SIGNAL void corridorTimeCheckError();
+
 	void setSelectedRow(std::optional<int> row);
 	QList<int> fullTextSearch(const QString &txt) const;
 private:
@@ -33,10 +36,11 @@ private:
 	std::optional<int> roleToColumn(Role role) const;
 	std::optional<QString> roleToName(Role role) const;
 	void onRunChanged(int run_id, const QVariant &record);
+	bool checkCorridorTime(int row, const QDateTime &corridor_time);
 private:
 	const QMap<Role, QMetaType::Type> m_roleTypes;
 	mutable QMap<QString, int> m_nameToIndex;
-	QDateTime m_corridorTime;
+	QDateTime m_starterTime;
 	std::optional<int> m_selectedRow;
 };
 

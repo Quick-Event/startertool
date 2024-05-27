@@ -1,6 +1,8 @@
 #include "application.h"
+
 #include "appclioptions.h"
 #include "mainwindow.h"
+#include "uisettingspage.h"
 
 #include <shv/iotqt/rpc/clientconnection.h>
 #include <shv/coreqt/log.h>
@@ -107,7 +109,29 @@ void Application::setCardRead(unsigned int siid)
 	if (siid == m_cardRead)
 		return;
 	m_cardRead = siid;
+	if (siid > 0) {
+		playAlert(Application::Alert::CardInserted);
+	}
 	emit cardReadChanged(m_cardRead);
+}
+
+void Application::playAlert(Alert alert)
+{
+	auto settings = UiSettingsPage::loadSettings();
+	switch (alert) {
+	case Alert::CardInserted: {
+		if (auto file = settings.soundCardInserted; !file.isEmpty()) {
+			playSound(file);
+		}
+		break;
+	}
+	case Alert::CorridorTimeCheckError: {
+		if (auto file = settings.soundCorridorTimeError; !file.isEmpty()) {
+			playSound(file);
+		}
+		break;
+	}
+	}
 }
 
 void Application::playSound(const QString &file)
@@ -154,7 +178,7 @@ void Application::loadCurrentStageConfig()
 			//m_currentStageConfig.startTime = config.value("startDateTime").toDateTime();
 			auto dtm = QDateTime::currentDateTime();
 			auto tm = dtm.time();
-			m_currentStageConfig.startTime = QDateTime(dtm.date(), QTime(tm.hour(), tm.minute(), 0)).addSecs(-30*60);
+			m_currentStageConfig.startTime = QDateTime(dtm.date(), QTime(tm.hour(), tm.minute(), 0)).addSecs(-5*60);
 		}
 	);
 }

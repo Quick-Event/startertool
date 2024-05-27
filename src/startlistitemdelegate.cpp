@@ -23,27 +23,14 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 	int letter_width = line_height / 2;
 	int corridor_status_width = letter_width;
 
-	auto start00_time = Application::instance()->currentStageStart();
-	auto current_time = Application::instance()->currentTime();
-	auto start_time = start00_time.addMSecs(index.data(StartListModel::Role::StartTime).toInt());
+	auto start_time = index.data(StartListModel::Role::StartDateTime).toDateTime();
 	auto corridor_time = index.data(StartListModel::Role::CorridorTime).toDateTime();
 
 	constexpr auto CORRIDOR1_COLOR = Qt::red;
 	constexpr auto CORRIDOR2_COLOR = QColorConstants::Svg::orange;
 	constexpr auto CORRIDOR3_COLOR = Qt::green;
 
-	enum Corridor {C1, C2, C3, Cn};
-	Corridor corridor = Cn;
-	auto c1_time = current_time;//.addSecs(60);
-	//if (c1_time.time().second() > 0) {
-	//	c1_time = c1_time.addSecs(-c1_time.time().second());
-	//	//c1_time = c1_time.addSecs(2 * 60);
-	//}
-	if (auto sec_diff = c1_time.secsTo(start_time); sec_diff > 0) {
-		if (sec_diff <= 60) corridor = C1;
-		else if (sec_diff <= 2*60) corridor = C2;
-		else if (sec_diff <= 3*60) corridor = C3;
-	}
+	auto corridor = static_cast<StartListModel::CorridorStage>(index.data(StartListModel::Role::Corridor).toInt());
 
 	constexpr auto TEXT_COLOR = Qt::yellow;
 	constexpr auto SELECTED_COLOR = Qt::magenta;
@@ -68,12 +55,12 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 		auto rect = option.rect;
 		rect.setWidth(corridor_status_width);
 		QColor c;
-		if (corridor != Cn) {
+		if (corridor > StartListModel::CorridorStage::CEarly && corridor < StartListModel::CorridorStage::CStarted) {
 			switch (corridor) {
-			case C1: c = CORRIDOR1_COLOR; break;
-			case C2: c = CORRIDOR2_COLOR; break;
-			case C3: c = CORRIDOR3_COLOR; break;
-			case Cn: break;
+			case StartListModel::CorridorStage::C1: c = CORRIDOR1_COLOR; break;
+			case StartListModel::CorridorStage::C2: c = CORRIDOR2_COLOR; break;
+			case StartListModel::CorridorStage::C3: c = CORRIDOR3_COLOR; break;
+			default: break;
 			}
 		}
 		// painter->drawRect(rect);

@@ -12,15 +12,23 @@ StartListModel::StartListModel(QObject *parent)
 	connect(app, &Application::runChanged, this, &StartListModel::onRunChanged);
 	connect(this, &StartListModel::recordChanged, Application::instance(), &Application::updateRun);
 	connect(app, &Application::currentTimeChanged, this, [this](const QDateTime &current_time) {
-		if (m_corridorTime.time().second() != current_time.time().second()) {
-			m_corridorTime = current_time;
-			auto line_time = current_time.addSecs(-60);
+		if (m_starterTime.time().minute() != current_time.time().minute()) {
+			m_starterTime = current_time;
+
+			// clear seconds, should be == 0 already
+			auto tm = m_starterTime.time();
+			if (tm.second() != 0) {
+				tm.setHMS(tm.hour(), tm.minute(), 0);
+				m_starterTime.setTime(tm);
+			}
+
+			auto line_time = m_starterTime.addSecs(-60);
 			//shvInfo() << "UPDATE===================" << m_corridorTime;
 			//ui->tableView->update();
 			for (auto row = 0; row < rowCount(); ++row) {
 				auto start = roleValue(row, Role::StartTime).toDateTime();
 				auto diff = start.secsTo(line_time);
-				if (diff >= 0 && diff < (60 * 4)) {
+				if (diff >= 0 && diff <= (60 * 4)) {
 					auto ix = index(row, 0);
 					emit dataChanged(ix, ix);
 				}
@@ -72,7 +80,8 @@ std::optional<QString> StartListModel::roleToName(Role role) const
 	case Role::SiId: return QStringLiteral("runs.siid");
 	case Role::CorridorTime: return QStringLiteral("runs.corridorTime");
 	case Role::IsSelectedRow: throw std::runtime_error("IsSelectedRow role has not column");
-	break;
+	case Role::Corridor: throw std::runtime_error("Corridor role has not column");
+	case Role::StartDateTime: throw std::runtime_error("StartDateTime role has not column");
 	}
 	return {};
 }
@@ -84,6 +93,26 @@ QVariant StartListModel::roleValue(int row, Role role) const
 			return m_selectedRow.value() == row;
 		}
 		return false;
+	}
+	if (role == Role::StartDateTime) {
+		auto start00_time = Application::instance()->currentStageStart();
+		auto start_msec = roleValue(row, Role::StartTime).toInt();
+		auto start_time = start00_time.addMSecs(start_msec);
+		return start_time;
+	}
+	if (role == Role::Corridor) {
+		auto start_time = roleValue(row, Role::StartDateTime).toDateTime();
+		CorridorStage corridor = CEarly;
+		auto sec_diff = m_starterTime.secsTo(start_time);
+		if (sec_diff <= 0) corridor = CStarted;
+		else if (sec_diff <= 60) corridor = C1;
+		else if (sec_diff <= 2*60) corridor = C2;
+		else if (sec_diff <= 3*60) corridor = C3;
+		else corridor = CEarly;
+		shvDebug() << "row:" << row << "Corridor:" << static_cast<int>(corridor)
+				   << "starter:" << m_starterTime.toString(Qt::ISODate)
+					<< "start:" << start_time.toString(Qt::ISODate);
+		return static_cast<int>(corridor);
 	}
 	if (auto col = roleToColumn(role); col.has_value()) {
 		auto v = m_result.value(row, col.value());
@@ -217,6 +246,13 @@ void StartListModel::onRunChanged(int run_id, const QVariant &record)
 		if (auto o_row = runIdToRow(run_id); o_row.has_value()) {
 			auto row = o_row.value();
 			for (const auto &[key, val] : rec.asKeyValueRange()) {
+				if (key == roleToName(Role::CorridorTime).value_or("")) {
+					auto corridor_time = val.toDateTime();
+					if (!checkCorridorTime(row, corridor_time)) {
+						emit corridorTimeCheckError();
+						continue;
+					}
+				}
 				m_result.setValue(row, key, val);
 			}
 			auto ix = createIndex(row, 0);
@@ -224,3 +260,20 @@ void StartListModel::onRunChanged(int run_id, const QVariant &record)
 		}
 	}
 }
+
+bool StartListModel::checkCorridorTime(int row, const QDateTime &corridor_time)
+{
+	if (!corridor_time.isValid()) {
+		return true;
+	}
+	auto corridor = static_cast<StartListModel::CorridorStage>(roleValue(row, Role::Corridor).toInt());
+	switch (corridor) {
+	case CEarly: return false;
+	case C3: return true;
+	case C2: return true;
+	case C1: return true;
+	case CStarted: return true;
+	}
+	return true;
+}
+

@@ -4,7 +4,7 @@ QuickEvent starter tool
 Features:
 * [x] two way on-line synchronisation with QuickEvent based on https://github.com/silicon-heaven/libshv
 * [x] card reader support
-* [ ] acoustic notification
+* [x] acoustic notification
 * [ ] Android build
 * [ ] published on Google Play
 * [ ] public SHV broker for event organizers
