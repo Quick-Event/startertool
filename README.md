@@ -2,8 +2,8 @@
 QuickEvent starter tool
 
 Features:
-* [ ] two way on-line synchronisation with QuickEvent based on https://github.com/silicon-heaven/libshv
-* [ ] card reader support
+* [x] two way on-line synchronisation with QuickEvent based on https://github.com/silicon-heaven/libshv
+* [x] card reader support
 * [ ] acoustic notification
 * [ ] Android build
 * [ ] published on Google Play
