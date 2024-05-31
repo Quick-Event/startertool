@@ -79,7 +79,7 @@ void StartListWidget::setSelectedRow(std::optional<int> row)
 	}
 }
 
-void StartListWidget::onCardRead(unsigned int siid)
+void StartListWidget::onCardInserted(unsigned int siid)
 {
 	shvDebug() << "SI id:" << siid;
 	for (auto row = 0; row < m_model->rowCount(); ++row) {
@@ -91,8 +91,11 @@ void StartListWidget::onCardRead(unsigned int siid)
 			record.insert(StartListModel::CorridorTime, QDateTime::currentDateTime());
 			m_model->setRecord(run_id, record);
 			setSelectedRow(row);
+			return;
 		}
 	}
+	// card not found
+	Application::instance()->playAlert(Application::Alert::CardNotFound);
 }
 
 void StartListWidget::resizeEvent(QResizeEvent *event)

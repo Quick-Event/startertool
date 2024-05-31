@@ -27,14 +27,7 @@
       <string>Sound</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="chkSoundCardInserted">
-        <property name="text">
-         <string>Card inserted</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
+      <item row="0" column="2">
        <widget class="QPushButton" name="btPlayCardInserted">
         <property name="icon">
          <iconset resource="../startertool.qrc">
@@ -42,14 +35,15 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="chkSoundCorridorTimeError">
-        <property name="text">
-         <string>Corridor time error</string>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="btPlayCorridorTimeError">
+        <property name="icon">
+         <iconset resource="../startertool.qrc">
+          <normaloff>:/images/play.svg</normaloff>:/images/play.svg</iconset>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
+      <item row="0" column="3">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -62,11 +56,41 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="btPlayCorridorTimeError">
+      <item row="1" column="2">
+       <widget class="QPushButton" name="btPlayCardNotFound">
         <property name="icon">
          <iconset resource="../startertool.qrc">
           <normaloff>:/images/play.svg</normaloff>:/images/play.svg</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="lstSoundCardInserted"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="lstSoundCardNotFound"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="lstSoundCorridorTimeError"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Card inserted</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Card not found</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Corridor time error</string>
         </property>
        </widget>
       </item>

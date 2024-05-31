@@ -104,7 +104,7 @@ void Application::updateRun(int run_id, const QVariant &record)
 	callShvApiMethod("event/currentStage/runs", "setRecord", QVariantList{run_id, record});
 }
 
-void Application::setCardRead(unsigned int siid)
+void Application::setCardInserted(unsigned int siid)
 {
 	if (siid == m_cardRead)
 		return;
@@ -112,7 +112,7 @@ void Application::setCardRead(unsigned int siid)
 	if (siid > 0) {
 		playAlert(Application::Alert::CardInserted);
 	}
-	emit cardReadChanged(m_cardRead);
+	emit cardInsertedChanged(m_cardRead);
 }
 
 void Application::playAlert(Alert alert)
@@ -127,6 +127,12 @@ void Application::playAlert(Alert alert)
 	}
 	case Alert::CorridorTimeCheckError: {
 		if (auto file = settings.soundCorridorTimeError; !file.isEmpty()) {
+			playSound(file);
+		}
+		break;
+	}
+	case Alert::CardNotFound: {
+		if (auto file = settings.soundCardNotFound; !file.isEmpty()) {
 			playSound(file);
 		}
 		break;

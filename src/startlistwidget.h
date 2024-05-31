@@ -18,7 +18,7 @@ public:
 	~StartListWidget();
 
 	void setSelectedRow(std::optional<int> row);
-	void onCardRead(unsigned siid);
+	void onCardInserted(unsigned siid);
 protected:
 	void resizeEvent(QResizeEvent *event) override;
 private:

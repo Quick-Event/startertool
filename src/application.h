@@ -66,13 +66,14 @@ public:
 	QDateTime currentTime() const { return m_currentTime; }
 	Q_SIGNAL void currentTimeChanged(const QDateTime &current_time);
 
-	Q_SIGNAL void cardReadChanged(unsigned siid);
-	unsigned cardRead() const { return m_cardRead; }
-	void setCardRead(unsigned siid);
+	Q_SIGNAL void cardInsertedChanged(unsigned siid);
+	unsigned cardInserted() const { return m_cardRead; }
+	void setCardInserted(unsigned siid);
 
 	enum class Alert {
 		CardInserted,
 		CorridorTimeCheckError,
+		CardNotFound,
 	};
 	void playAlert(Alert alert);
 	void playSound(const QString &file);

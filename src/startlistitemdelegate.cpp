@@ -103,7 +103,7 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 		painter->drawText(rect, name);
 	}
 	{
-		auto card_read_siid = Application::instance()->cardRead();
+		auto card_read_siid = Application::instance()->cardInserted();
 		auto rect = option.rect;
 		rect.translate(registration_offset, option.rect.height() / 2);
 		rect.setRight(option.rect.right() - option.rect.height());

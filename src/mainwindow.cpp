@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	auto *app = Application::instance();
 	auto *startlist_widget = new StartListWidget();
-	connect(app, &Application::cardReadChanged, startlist_widget, &StartListWidget::onCardRead);
+	connect(app, &Application::cardInsertedChanged, startlist_widget, &StartListWidget::onCardInserted);
 	ui->stackedWidget->addWidget(startlist_widget);
 
 	auto *menu = new QMenu(this);
@@ -213,6 +213,7 @@ void MainWindow::initCardReader()
 		ui->edReadSiId->hide();
 		return;
 	}
+	ui->edReadSiId->show();
 	auto *comport = new QSerialPort(settings.deviceName, this);
 	comport->setBaudRate(settings.baudRate);
 	comport->setDataBits(settings.dataBits);
@@ -230,7 +231,7 @@ void MainWindow::initCardReader()
 				if (cmd != si::Command::SICardRemoved) {
 					ui->edReadSiId->setStyleSheet({});
 					ui->edReadSiId->setText(QString::number(siid));
-					Application::instance()->setCardRead(siid);
+					Application::instance()->setCardInserted(siid);
 				}
 			}
 			catch(const std::exception &e) {

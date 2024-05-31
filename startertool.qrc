@@ -23,5 +23,6 @@
         <file>sound/buzz.wav</file>
         <file>sound/ding.wav</file>
         <file>sound/dingding.wav</file>
+        <file>sound/look.wav</file>
     </qresource>
 </RCC>

@@ -7,6 +7,7 @@ struct UiSettings
 {
 	bool toggleCorridorTime = false;
 	QString soundCardInserted;
+	QString soundCardNotFound;
 	QString soundCorridorTimeError;
 };
 
