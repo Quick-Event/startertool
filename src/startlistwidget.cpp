@@ -60,7 +60,7 @@ StartListWidget::StartListWidget(QWidget *parent) :
 					record.insert(StartListModel::CorridorTime, QDateTime::currentDateTime());
 				}
 			}
-			m_model->setRecord(run_id, record);
+			m_model->updateLocalRecord(run_id, record);
 		}
 	});
 }
@@ -89,7 +89,7 @@ void StartListWidget::onCardInserted(unsigned int siid)
 			//shvDebug() << "row:" << run_id << "dt:" << corridor_time.toString();
 			QMap<StartListModel::Role, QVariant> record;
 			record.insert(StartListModel::CorridorTime, QDateTime::currentDateTime());
-			m_model->setRecord(run_id, record);
+			m_model->updateLocalRecord(run_id, record);
 			setSelectedRow(row);
 			return;
 		}

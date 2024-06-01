@@ -24,8 +24,10 @@ public:
 	std::optional<int> runIdToRow(int run_id) const;
 	QVariant recordValue(int run_id, Role role) const;
 
-	void setRecord(int run_id, const QMap<Role, QVariant> &record);
-	Q_SIGNAL void recordChanged(int run_id, const QVariant &record);
+	void updateLocalRecord(int run_id, const QMap<Role, QVariant> &record);
+	Q_SIGNAL void localRecordUpdated(int run_id, const QVariant &record);
+
+	void applyRemoteRecordChanges(int run_id, const QVariant &record);
 
 	Q_SIGNAL void corridorTimeCheckError();
 
@@ -35,13 +37,13 @@ private:
 	QVariant retypeValue(const QVariant &val, Role role) const;
 	std::optional<int> roleToColumn(Role role) const;
 	std::optional<QString> roleToName(Role role) const;
-	void onRunChanged(int run_id, const QVariant &record);
 	bool checkCorridorTime(int row, const QDateTime &corridor_time);
 private:
 	const QMap<Role, QMetaType::Type> m_roleTypes;
 	mutable QMap<QString, int> m_nameToIndex;
 	QDateTime m_starterTime;
 	std::optional<int> m_selectedRow;
+	QMap<int, QVariantMap> m_unconfirmedRecordChanges;
 };
 
 #endif // STARTLISTMODEL_H

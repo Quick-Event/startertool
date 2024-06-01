@@ -9,8 +9,8 @@ StartListModel::StartListModel(QObject *parent)
 	, m_roleTypes{{Role::CorridorTime, QMetaType::Type::QDateTime}}
 {
 	auto *app = Application::instance();
-	connect(app, &Application::runChanged, this, &StartListModel::onRunChanged);
-	connect(this, &StartListModel::recordChanged, Application::instance(), &Application::updateRun);
+	connect(app, &Application::runChanged, this, &StartListModel::applyRemoteRecordChanges);
+	connect(this, &StartListModel::localRecordUpdated, Application::instance(), &Application::updateRun);
 	connect(app, &Application::currentTimeChanged, this, [this](const QDateTime &current_time) {
 		if (m_starterTime.time().minute() != current_time.time().minute()) {
 			m_starterTime = current_time;
@@ -151,7 +151,7 @@ QVariant StartListModel::recordValue(int run_id, Role role) const
 	return {};
 }
 
-void StartListModel::setRecord(int run_id, const QMap<StartListModel::Role, QVariant> &record)
+void StartListModel::updateLocalRecord(int run_id, const QMap<StartListModel::Role, QVariant> &record)
 {
 	if (auto o_row = runIdToRow(run_id); o_row.has_value()) {
 		auto row = o_row.value();
@@ -169,12 +169,20 @@ void StartListModel::setRecord(int run_id, const QMap<StartListModel::Role, QVar
 			if (v1 != v2) {
 				if (auto colname = roleToName(role); colname.has_value()) {
 					shvDebug() << "chng:" << v2.toString() << v2.typeName();
+					if (colname == roleToName(Role::CorridorTime).value_or("")) {
+						auto corridor_time = val.toDateTime();
+						if (!checkCorridorTime(row, corridor_time)) {
+							emit corridorTimeCheckError();
+							continue;
+						}
+					}
 					chngmap[colname.value()] = v2;
 				}
 			}
 		}
 		if (!chngmap.isEmpty()) {
-			emit recordChanged(run_id, chngmap);
+			m_unconfirmedRecordChanges[run_id].insert(chngmap);
+			emit localRecordUpdated(run_id, chngmap);
 		}
 	}
 }
@@ -231,13 +239,14 @@ QVariant StartListModel::retypeValue(const QVariant &val, Role role) const
 	return val;
 }
 
-void StartListModel::onRunChanged(int run_id, const QVariant &record)
+void StartListModel::applyRemoteRecordChanges(int run_id, const QVariant &record)
 {
-	if (record.isNull()) {
+	if (record.isNull() || !record.isValid()) {
 		if (auto o_row = runIdToRow(run_id); o_row.has_value()) {
 			auto row = o_row.value();
 			beginRemoveRows({}, row, row);
 			m_result.rows.removeAt(row);
+			m_unconfirmedRecordChanges.remove(run_id);
 			endRemoveRows();
 		}
 	}
@@ -246,17 +255,19 @@ void StartListModel::onRunChanged(int run_id, const QVariant &record)
 		if (auto o_row = runIdToRow(run_id); o_row.has_value()) {
 			auto row = o_row.value();
 			for (const auto &[key, val] : rec.asKeyValueRange()) {
-				if (key == roleToName(Role::CorridorTime).value_or("")) {
-					auto corridor_time = val.toDateTime();
-					if (!checkCorridorTime(row, corridor_time)) {
-						emit corridorTimeCheckError();
-						continue;
-					}
-				}
 				m_result.setValue(row, key, val);
+				m_unconfirmedRecordChanges[run_id].remove(key);
 			}
 			auto ix = createIndex(row, 0);
 			emit dataChanged(ix, ix);
+		}
+		else {
+			auto row = rowCount();
+			beginInsertRows({}, row, row);
+			for (const auto &[key, val] : rec.asKeyValueRange()) {
+				m_result.setValue(row, key, val);
+			}
+			endInsertRows();
 		}
 	}
 }

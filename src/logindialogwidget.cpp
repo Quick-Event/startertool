@@ -1,5 +1,5 @@
-#include "loginwidget.h"
-#include "ui_loginwidget.h"
+#include "logindialogwidget.h"
+#include "ui_logindialogwidget.h"
 
 #include "application.h"
 #include "appclioptions.h"
@@ -8,9 +8,9 @@
 #include <QTimer>
 #include <QUrlQuery>
 
-LoginWidget::LoginWidget(AutoconnectEnabled autoconnect_enbled, QWidget *parent)
+LoginDialogWidget::LoginDialogWidget(AutoconnectEnabled autoconnect_enbled, QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::LoginWidget)
+	, ui(new Ui::LoginDialogWidget)
 {
 	ui->setupUi(this);
 
@@ -61,11 +61,11 @@ LoginWidget::LoginWidget(AutoconnectEnabled autoconnect_enbled, QWidget *parent)
 		connectToBroker();
 	});
 	if (autoconnect_enbled == AutoconnectEnabled::Yes) {
-		QTimer::singleShot(0, this, &LoginWidget::checkAutoConnect);
+		QTimer::singleShot(0, this, &LoginDialogWidget::checkAutoConnect);
 	}
 }
 
-LoginWidget::~LoginWidget()
+LoginDialogWidget::~LoginDialogWidget()
 {
 	QSettings settings;
 	settings.setValue("brokerUrl", connectionUrl().toString());
@@ -74,7 +74,7 @@ LoginWidget::~LoginWidget()
 	delete ui;
 }
 
-void LoginWidget::checkAutoConnect()
+void LoginDialogWidget::checkAutoConnect()
 {
 	auto auto_connect = ui->autoConnect->isChecked();
 	if (auto_connect) {
@@ -82,7 +82,7 @@ void LoginWidget::checkAutoConnect()
 	}
 }
 
-QUrl LoginWidget::connectionUrl() const
+QUrl LoginDialogWidget::connectionUrl() const
 {
 	QUrl ret(ui->url->text());
 	QUrlQuery q;
@@ -93,7 +93,7 @@ QUrl LoginWidget::connectionUrl() const
 	return ret;
 }
 
-void LoginWidget::connectToBroker()
+void LoginDialogWidget::connectToBroker()
 {
 	auto *app = Application::instance();
 	app->showError(tr("Connecting to broker"), NecroLogLevel::Info);

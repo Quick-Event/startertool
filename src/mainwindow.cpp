@@ -1,17 +1,19 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "startlistmodel.h"
-#include "si.h"
-#include "settingswidget.h"
-#include "application.h"
-#include "loginwidget.h"
-#include "startlistwidget.h"
+#include "settingsdialogwidget.h"
+#include "logindialogwidget.h"
+#include "unconfirmedchangesdialogwidget.h"
 
 #include "serialportsettingspage.h"
 #include "stagesettingspage.h"
 #include "classfiltersettingspage.h"
 #include "uisettingspage.h"
+
+#include "startlistmodel.h"
+#include "si.h"
+#include "application.h"
+#include "startlistwidget.h"
 
 #include <shv/coreqt/log.h>
 
@@ -42,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	{
 		auto *a = new QAction(tr("Connection"));
 		connect(a, &QAction::triggered, this, [this]() {
-			auto *widget = new LoginWidget(LoginWidget::AutoconnectEnabled::No);
+			auto *widget = new LoginDialogWidget(LoginDialogWidget::AutoconnectEnabled::No);
 			showDialogWidget(widget);
 		});
 		menu->addAction(a);
@@ -50,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	{
 		auto *a = new QAction(tr("Settings"));
 		connect(a, &QAction::triggered, this, [this]() {
-			auto *widget = new SettingsWidget();
+			auto *widget = new SettingsDialogWidget();
 
 			widget->addPage(new UiSettingsPage());
 			widget->addPage(new StageSettingsPage());
@@ -62,15 +64,19 @@ MainWindow::MainWindow(QWidget *parent) :
 			});
 
 			showDialogWidget(widget);
-			connect(widget, &SettingsWidget::destroyed, Application::instance(), &Application::emitSettingsChanged);
+			connect(widget, &SettingsDialogWidget::destroyed, Application::instance(), &Application::emitSettingsChanged);
 
 		});
 		menu->addAction(a);
 	}
-	//connect(ui->tbShowMenu, &QPushButton::clicked, this, [this]() {
-	//	auto *login_widget = new LoginWidget();
-	//	showDialogWidget(login_widget);
-	//});
+	{
+		auto *a = new QAction(tr("Unconfirmed changes"));
+		connect(a, &QAction::triggered, this, [this]() {
+			auto *widget = new UnconfirmedChangesDialogWidget();
+			showDialogWidget(widget);
+		});
+		menu->addAction(a);
+	}
 	connect(app, &Application::showErrorRq, this, &MainWindow::showError);
 	connect(ui->btFind, &QAbstractButton::clicked, this, [this](bool checked) {
 		auto select_matched_row = [this]() {
@@ -156,7 +162,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		ui->lblCurrentTime->setText(current_time.toString("hh:mm:ss"));
 	});
 
-	auto *login_widget = new LoginWidget(LoginWidget::AutoconnectEnabled::Yes);
+	auto *login_widget = new LoginDialogWidget(LoginDialogWidget::AutoconnectEnabled::Yes);
 	showDialogWidget(login_widget);
 	initCardReader();
 }

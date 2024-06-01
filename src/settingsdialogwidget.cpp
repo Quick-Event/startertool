@@ -1,5 +1,5 @@
-#include "settingswidget.h"
-#include "ui_settingswidget.h"
+#include "settingsdialogwidget.h"
+#include "ui_settingsdialogwidget.h"
 
 #include "settingspage.h"
 
@@ -11,9 +11,9 @@
 #include <QPushButton>
 #include <QTimer>
 
-SettingsWidget::SettingsWidget(QWidget *parent)
+SettingsDialogWidget::SettingsDialogWidget(QWidget *parent)
 	: QWidget(parent)
-	, ui(new Ui::SettingsWidget)
+	, ui(new Ui::SettingsDialogWidget)
 {
 	ui->setupUi(this);
 	m_buttonGroup = new QButtonGroup(this);
@@ -35,19 +35,19 @@ SettingsWidget::SettingsWidget(QWidget *parent)
 	});
 }
 
-SettingsWidget::~SettingsWidget()
+SettingsDialogWidget::~SettingsDialogWidget()
 {
 	delete ui;
 }
 
-SettingsPage *SettingsWidget::page(int page_index)
+SettingsPage *SettingsDialogWidget::page(int page_index)
 {
 	auto *page = ui->stackedWidget->widget(page_index)->findChild<SettingsPage*>(QString(), Qt::FindDirectChildrenOnly);
 	Q_ASSERT(page);
 	return page;
 }
 
-void SettingsWidget::addPage(SettingsPage *page)
+void SettingsDialogWidget::addPage(SettingsPage *page)
 {
 	auto caption = page->caption();
 	Q_ASSERT(!caption.isEmpty());

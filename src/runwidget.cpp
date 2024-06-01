@@ -65,5 +65,5 @@ void RunWidget::save()
 	auto v = corridor_time == NULL_TIME? QVariant(): QVariant(corridor_time);
 	record.insert(StartListModel::CorridorTime, v);
 
-	m_model->setRecord(m_runId, record);
+	m_model->updateLocalRecord(m_runId, record);
 }
