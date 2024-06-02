@@ -15,6 +15,7 @@ public:
 	explicit UnconfirmedChangesDialogWidget(QWidget *parent = nullptr);
 	~UnconfirmedChangesDialogWidget();
 
+	void setText(const QString &txt);
 private:
 	Ui::UnconfirmedChangesDialogWidget *ui;
 };

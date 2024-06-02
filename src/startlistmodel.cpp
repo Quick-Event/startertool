@@ -3,6 +3,7 @@
 #include "application.h"
 
 #include <shv/coreqt/log.h>
+#include <shv/coreqt/rpc.h>
 
 StartListModel::StartListModel(QObject *parent)
 	: Super(parent)
@@ -35,6 +36,12 @@ StartListModel::StartListModel(QObject *parent)
 			}
 		}
 	});
+}
+
+void StartListModel::setResult(const Result &result)
+{
+	m_unconfirmedRecordChanges.clear();
+	Super::setResult(result);
 }
 
 QVariant StartListModel::data(const QModelIndex &index, int role) const
@@ -71,14 +78,15 @@ std::optional<int> StartListModel::roleToColumn(Role role) const
 
 std::optional<QString> StartListModel::roleToName(Role role) const
 {
+	// column names MUST in be lower case because of SQL
 	switch (role) {
 	case Role::RunId: return QStringLiteral("runs.id");
-	case Role::CompetitorName: return QStringLiteral("competitorName");
+	case Role::CompetitorName: return QStringLiteral("competitorname");
 	case Role::Registration: return QStringLiteral("competitors.registration");
 	case Role::ClassName: return QStringLiteral("classes.name");
 	case Role::StartTime: return QStringLiteral("runs.starttimems");
 	case Role::SiId: return QStringLiteral("runs.siid");
-	case Role::CorridorTime: return QStringLiteral("runs.corridorTime");
+	case Role::CorridorTime: return QStringLiteral("runs.corridortime");
 	case Role::IsSelectedRow: throw std::runtime_error("IsSelectedRow role has not column");
 	case Role::Corridor: throw std::runtime_error("Corridor role has not column");
 	case Role::StartDateTime: throw std::runtime_error("StartDateTime role has not column");
@@ -109,9 +117,9 @@ QVariant StartListModel::roleValue(int row, Role role) const
 		else if (sec_diff <= 2*60) corridor = C2;
 		else if (sec_diff <= 3*60) corridor = C3;
 		else corridor = CEarly;
-		shvDebug() << "row:" << row << "Corridor:" << static_cast<int>(corridor)
-				   << "starter:" << m_starterTime.toString(Qt::ISODate)
-					<< "start:" << start_time.toString(Qt::ISODate);
+		//shvDebug() << "row:" << row << "Corridor:" << static_cast<int>(corridor)
+		//		   << "starter:" << m_starterTime.toString(Qt::ISODate)
+		//			<< "start:" << start_time.toString(Qt::ISODate);
 		return static_cast<int>(corridor);
 	}
 	if (auto col = roleToColumn(role); col.has_value()) {
@@ -181,7 +189,9 @@ void StartListModel::updateLocalRecord(int run_id, const QMap<StartListModel::Ro
 			}
 		}
 		if (!chngmap.isEmpty()) {
+			shvDebug() << "setting unconfirmed value on run_id:" << run_id << "map:" << shv::coreqt::rpc::qVariantToPrettyString(chngmap, "  ");
 			m_unconfirmedRecordChanges[run_id].insert(chngmap);
+			shvDebug() << "new unconfirmed value on run_id:" << run_id << "map:" << shv::coreqt::rpc::qVariantToPrettyString(m_unconfirmedRecordChanges[run_id], "  ");
 			emit localRecordUpdated(run_id, chngmap);
 		}
 	}
@@ -216,6 +226,17 @@ QList<int> StartListModel::fullTextSearch(const QString &txt) const
 		}
 	}
 	return ret.keys();
+}
+
+QVariantMap StartListModel::unconfirmedRecordChanges() const
+{
+	QVariantMap ret;
+	for (const auto &[k, v] : m_unconfirmedRecordChanges.asKeyValueRange()) {
+		if (!v.isEmpty()) {
+			ret[QString::number(k)] = v;
+		}
+	}
+	return ret;
 }
 
 QVariant StartListModel::retypeValue(const QVariant &val, Role role) const
@@ -256,7 +277,9 @@ void StartListModel::applyRemoteRecordChanges(int run_id, const QVariant &record
 			auto row = o_row.value();
 			for (const auto &[key, val] : rec.asKeyValueRange()) {
 				m_result.setValue(row, key, val);
+				shvDebug() << "removing unconfirmed value on run_id:" << run_id << "key:" << key;
 				m_unconfirmedRecordChanges[run_id].remove(key);
+				shvDebug() << "new unconfirmed value on run_id:" << run_id << "map:" << shv::coreqt::rpc::qVariantToPrettyString(m_unconfirmedRecordChanges[run_id], "  ");
 			}
 			auto ix = createIndex(row, 0);
 			emit dataChanged(ix, ix);

@@ -17,6 +17,8 @@ public:
 	explicit StartListWidget(QWidget *parent = nullptr);
 	~StartListWidget();
 
+	StartListModel *startListModel() { return m_model; }
+
 	void setSelectedRow(std::optional<int> row);
 	void onCardInserted(unsigned siid);
 protected:

@@ -16,6 +16,7 @@
 #include "startlistwidget.h"
 
 #include <shv/coreqt/log.h>
+#include <shv/coreqt/rpc.h>
 
 #include <QSettings>
 #include <QPushButton>
@@ -73,6 +74,11 @@ MainWindow::MainWindow(QWidget *parent) :
 		auto *a = new QAction(tr("Unconfirmed changes"));
 		connect(a, &QAction::triggered, this, [this]() {
 			auto *widget = new UnconfirmedChangesDialogWidget();
+			auto *startlist_widget = findChild<StartListWidget*>();
+			Q_ASSERT(startlist_widget);
+			auto chngmap = startlist_widget->startListModel()->unconfirmedRecordChanges();
+			auto rv = shv::coreqt::rpc::qVariantToRpcValue(chngmap);
+			widget->setText(QString::fromStdString(rv.toCpon("  ")));
 			showDialogWidget(widget);
 		});
 		menu->addAction(a);

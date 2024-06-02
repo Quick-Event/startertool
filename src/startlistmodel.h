@@ -16,6 +16,8 @@ public:
 
 	explicit StartListModel(QObject *parent = nullptr);
 
+	virtual void setResult(const Result &result) override;
+
 	int columnCount(const QModelIndex &) const override { return 1; }
 	QVariant data(const QModelIndex &index, int role) const override;
 
@@ -33,6 +35,8 @@ public:
 
 	void setSelectedRow(std::optional<int> row);
 	QList<int> fullTextSearch(const QString &txt) const;
+
+	QVariantMap unconfirmedRecordChanges() const;
 private:
 	QVariant retypeValue(const QVariant &val, Role role) const;
 	std::optional<int> roleToColumn(Role role) const;

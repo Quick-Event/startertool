@@ -20,7 +20,7 @@ public:
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	QVariant data(const QModelIndex &index, int role) const override;
 
-	void setResult(const Result &result);
+	virtual void setResult(const Result &result);
 protected:
 	Result m_result;
 };
