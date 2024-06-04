@@ -9,6 +9,19 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if (WIN32)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(CMAKE_WIN32_EXECUTABLE ON) # Don't open a console window for Windows apps on Relase mode.
+	endif()
+endif (WIN32)
+
+set(USE_QT6 ON)
+set(LIBSHV_WITH_WEBSOCKETS OFF CACHE BOOL "")
+set(LIBSHV_WITH_BROKER OFF CACHE BOOL "")
+set(LIBSHV_WITH_VISU OFF CACHE BOOL "")
+set(BUILD_TESTING OFF CACHE BOOL "")
+set(BUILD_SHV_UTILS OFF CACHE BOOL "")
+
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets )
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui Svg SerialPort Network Multimedia LinguistTools)
 

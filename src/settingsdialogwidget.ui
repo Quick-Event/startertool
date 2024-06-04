@@ -54,13 +54,10 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QToolButton" name="btBack">
+       <widget class="QPushButton" name="btBack">
         <property name="icon">
          <iconset resource="../startertool.qrc">
           <normaloff>:/images/back.svg</normaloff>:/images/back.svg</iconset>
-        </property>
-        <property name="autoRaise">
-         <bool>true</bool>
         </property>
        </widget>
       </item>

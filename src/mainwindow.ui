@@ -59,15 +59,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="btHere">
+       <widget class="QPushButton" name="btHere">
         <property name="icon">
          <iconset resource="../startertool.qrc">
           <normaloff>:/images/here.svg</normaloff>:/images/here.svg</iconset>
         </property>
         <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoRaise">
          <bool>true</bool>
         </property>
        </widget>
@@ -93,15 +90,12 @@
        </spacer>
       </item>
       <item>
-       <widget class="QToolButton" name="btFind">
+       <widget class="QPushButton" name="btFind">
         <property name="icon">
          <iconset resource="../startertool.qrc">
           <normaloff>:/images/find.svg</normaloff>:/images/find.svg</iconset>
         </property>
         <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoRaise">
          <bool>true</bool>
         </property>
        </widget>
