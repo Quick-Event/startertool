@@ -4,11 +4,13 @@
 #include <shv/coreqt/log.h>
 
 #include <QMouseEvent>
+#include <QGestureEvent>
+#include <QSwipeGesture>
 
 StartListTableView::StartListTableView(QWidget *parent)
 	: Super(parent)
 {
-
+	grabGesture(Qt::SwipeGesture);
 }
 
 void StartListTableView::mousePressEvent(QMouseEvent *event)
@@ -33,4 +35,35 @@ void StartListTableView::mousePressEvent(QMouseEvent *event)
 		return;
 	}
 	Super::mousePressEvent(event);
+}
+
+bool StartListTableView::event(QEvent *event)
+{
+	if (event->type() == QEvent::Gesture)
+		return gestureEvent(static_cast<QGestureEvent*>(event));
+	return QWidget::event(event);
+}
+
+bool StartListTableView::gestureEvent(QGestureEvent *event)
+{
+	shvInfo() << "gestureEvent():" << event;
+	if (QGesture *swipe = event->gesture(Qt::SwipeGesture))
+		swipeTriggered(static_cast<QSwipeGesture *>(swipe));
+	return true;
+}
+
+void StartListTableView::swipeTriggered(QSwipeGesture *gesture)
+{
+	if (gesture->state() == Qt::GestureFinished) {
+		if (gesture->verticalDirection() == QSwipeGesture::Up) {
+			shvInfo() << "UP";
+		}
+		else if (gesture->verticalDirection() == QSwipeGesture::Down) {
+			shvInfo() << "DOWN";
+		}
+		else {
+			shvInfo() << "other";
+		}
+		update();
+	}
 }

@@ -3,6 +3,9 @@
 
 #include <QTableView>
 
+class QGestureEvent;
+class QSwipeGesture;
+
 class StartListTableView : public QTableView
 {
 	Q_OBJECT
@@ -14,6 +17,11 @@ public:
 	Q_SIGNAL void corridorTimeButtonPressed(int run_id);
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
+	bool event(QEvent *event) override;
+
+private:
+	bool gestureEvent(QGestureEvent *event);
+	void swipeTriggered(QSwipeGesture*gesture);
 };
 
 #endif // STARTLISTTABLEVIEW_H
