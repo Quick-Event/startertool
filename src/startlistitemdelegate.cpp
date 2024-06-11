@@ -3,6 +3,8 @@
 #include "startlistmodel.h"
 #include "application.h"
 
+#include <shv/coreqt/log.h>
+
 #include <QPainter>
 #include <QPixmap>
 #include <QSvgRenderer>
@@ -17,6 +19,7 @@ StartListItemDelegate::StartListItemDelegate(QObject *parent)
 
 void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+	shvLogFuncFrame();
 	painter->save();
 	auto is_selected = index.data(StartListModel::Role::IsSelectedRow).toBool();
 	auto line_height = option.rect.height()	/ 2;

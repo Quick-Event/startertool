@@ -2,9 +2,7 @@
 #define STARTLISTTABLEVIEW_H
 
 #include <QTableView>
-
-class QGestureEvent;
-class QSwipeGesture;
+#include <QElapsedTimer>
 
 class StartListTableView : public QTableView
 {
@@ -16,12 +14,18 @@ public:
 	Q_SIGNAL void editButtonPressed(int run_id);
 	Q_SIGNAL void corridorTimeButtonPressed(int run_id);
 protected:
-	void mousePressEvent(QMouseEvent *event) override;
 	bool event(QEvent *event) override;
-
 private:
-	bool gestureEvent(QGestureEvent *event);
-	void swipeTriggered(QSwipeGesture*gesture);
+	void onMousePress(const QPoint &pos);
+private:
+	struct TouchState
+	{
+		QPointF startPos;
+		bool isClick = true;
+		int sbPos = 0;
+		//QElapsedTimer m_durationTimer;
+	};
+	std::optional<TouchState> m_touchState;
 };
 
 #endif // STARTLISTTABLEVIEW_H
