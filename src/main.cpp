@@ -11,6 +11,30 @@
 
 #include <iostream>
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <necrolog.h>
+
+constexpr int to_android_log_level(const NecroLog::Level level)
+{
+	switch (level) {
+	case NecroLogLevel::Invalid: return ANDROID_LOG_UNKNOWN;
+	case NecroLogLevel::Fatal: return ANDROID_LOG_FATAL;
+	case NecroLogLevel::Error: return ANDROID_LOG_ERROR;
+	case NecroLogLevel::Warning: return ANDROID_LOG_WARN;
+	case NecroLogLevel::Info: return ANDROID_LOG_INFO;
+	case NecroLogLevel::Message: return ANDROID_LOG_VERBOSE;
+	case NecroLogLevel::Debug: return ANDROID_LOG_DEBUG;
+	}
+	return ANDROID_LOG_UNKNOWN;
+}
+
+#define ANDROID_LOG(level, format, ...) __android_log_print(to_android_log_level(level), "flatline", format __VA_OPT__(,) __VA_ARGS__)
+
+#else
+#define ANDROID_LOG
+#endif
+
 int main(int argc, char *argv[])
 {
 	QCoreApplication::setOrganizationName("quickbox");
@@ -45,6 +69,17 @@ int main(int argc, char *argv[])
 	}
 
 	shv::chainpack::RpcMessage::registerMetaTypes();
+
+#ifdef __ANDROID__
+	NecroLog::MessageHandler old_message_handler;
+	old_message_handler = NecroLog::setMessageHandler([&old_message_handler] (NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg) {
+		std::ostringstream oss;
+		NecroLog::writeWithDefaultFormat(oss, true, level, context, msg);
+		// To see this log, use `adb logcat -T1 -s eyasmobile:D`.
+		ANDROID_LOG(level, "%s", oss.str().c_str());
+		old_message_handler(level, context, msg);
+	});
+#endif
 
 	shvInfo() << "======================================================================================";
 	shvInfo() << "Starting application" << QCoreApplication::applicationName()
