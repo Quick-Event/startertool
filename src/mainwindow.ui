@@ -59,7 +59,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btHere">
+       <widget class="QPushButton" name="btGotoNow">
         <property name="icon">
          <iconset resource="../startertool.qrc">
           <normaloff>:/images/here.svg</normaloff>:/images/here.svg</iconset>

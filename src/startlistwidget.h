@@ -17,9 +17,12 @@ public:
 	explicit StartListWidget(QWidget *parent = nullptr);
 	~StartListWidget();
 
+	Q_SIGNAL void manualScroll();
+
 	StartListModel *startListModel() { return m_model; }
 
 	void setSelectedRow(std::optional<int> row);
+	void scrollToStartTime(const QDateTime &tm);
 	void onCardInserted(unsigned siid);
 protected:
 	void resizeEvent(QResizeEvent *event) override;

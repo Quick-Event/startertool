@@ -13,6 +13,7 @@ public:
 
 	Q_SIGNAL void editButtonPressed(int run_id);
 	Q_SIGNAL void corridorTimeButtonPressed(int run_id);
+	Q_SIGNAL void manualScroll();
 protected:
 	bool event(QEvent *event) override;
 private:

@@ -84,6 +84,20 @@ MainWindow::MainWindow(QWidget *parent) :
 		menu->addAction(a);
 	}
 	connect(app, &Application::showErrorRq, this, &MainWindow::showError);
+	connect(startlist_widget, &StartListWidget::manualScroll, this, [this]() {
+		ui->btGotoNow->setChecked(false);
+	});
+	connect(ui->btGotoNow, &QAbstractButton::toggled, this, [this](bool checked) {
+		auto *startlist_widget = findChild<StartListWidget*>();
+		Q_ASSERT(startlist_widget);
+		auto app = Application::instance();
+		if (checked) {
+			connect(app, &Application::currentTimeChanged, startlist_widget, &StartListWidget::scrollToStartTime);
+		}
+		else {
+			disconnect(app, &Application::currentTimeChanged, startlist_widget, &StartListWidget::scrollToStartTime);
+		}
+	});
 	connect(ui->btFind, &QAbstractButton::clicked, this, [this](bool checked) {
 		auto select_matched_row = [this]() {
 			auto *model = findChild<StartListModel*>();

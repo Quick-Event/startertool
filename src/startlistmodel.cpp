@@ -27,7 +27,7 @@ StartListModel::StartListModel(QObject *parent)
 			//shvInfo() << "UPDATE===================" << m_corridorTime;
 			//ui->tableView->update();
 			for (auto row = 0; row < rowCount(); ++row) {
-				auto start = roleValue(row, Role::StartTime).toDateTime();
+				auto start = roleValue(row, Role::StartDateTime).toDateTime();
 				auto diff = start.secsTo(line_time);
 				if (diff >= 0 && diff <= (60 * 4)) {
 					auto ix = index(row, 0);

@@ -77,6 +77,7 @@ bool StartListTableView::event(QEvent *event)
 				//shvDebug() << "sb, scrool by:" << dy2;
 				//shvDebug() << ts.sbPos << "============>" << (ts.sbPos + dy2);
 				sb->setValue(ts.sbPos + dy2);
+				emit manualScroll();
 			}
 			event->setAccepted(true);
 			// update();

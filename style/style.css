@@ -1,4 +1,5 @@
 QPushButton {icon-size: 32px}
+QPushButton#btGotoNow:checked {background-color: orange}
 
 /*
 QToolButton {border-radius: 6px; background-color: #e5e5e5; border: 2px solid #d9d9d9;}

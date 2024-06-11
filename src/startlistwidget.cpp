@@ -24,6 +24,9 @@ StartListWidget::StartListWidget(QWidget *parent) :
 	, m_model(new StartListModel(this))
 {
 	ui->setupUi(this);
+
+	connect(ui->tableView, &StartListTableView::manualScroll, this, &StartListWidget::manualScroll);
+
 	ui->tableView->setModel(m_model);
 	ui->tableView->viewport()->setAttribute(Qt::WA_AcceptTouchEvents);
 	ui->tableView->setItemDelegate(new StartListItemDelegate(this));
@@ -76,6 +79,17 @@ void StartListWidget::setSelectedRow(std::optional<int> row)
 	if (row.has_value()) {
 		auto ix = m_model->index(row.value(), 0);
 		ui->tableView->scrollTo(ix);
+	}
+}
+
+void StartListWidget::scrollToStartTime(const QDateTime &tm)
+{
+	for (auto row = 0; row < m_model->rowCount(); ++row) {
+		auto start = m_model->roleValue(row, StartListModel::Role::StartDateTime).toDateTime();
+		if (start <= tm) {
+			auto ix = m_model->index(row, 0);
+			ui->tableView->scrollTo(ix, QTableView::PositionAtTop);
+		}
 	}
 }
 
