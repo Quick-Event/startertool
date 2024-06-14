@@ -11,6 +11,10 @@
 #include <QLineEdit>
 #include <QTimer>
 
+#ifdef ANDROID
+#include <QJniObject>
+#endif
+
 SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 	: Super(tr("Serial port"), parent)
 	, ui(new Ui::SerialPortSettingsPage)
@@ -18,6 +22,15 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 	ui->setupUi(this);
 	ui->txtError->hide();
 	connect(ui->btTest, &QPushButton::clicked, this, [this](bool checked) {
+#ifdef ANDROID
+		QJniObject javaNotification = QJniObject::fromString("ahoj");
+		QJniObject::callStaticMethod<void>(
+						"org/quickbox/startertool/SerialPort",
+						"printMessage",
+						"(Landroid/content/Context;Ljava/lang/String;)V",
+						QNativeInterface::QAndroidApplication::context(),
+						javaNotification.object<jstring>());
+#else
 		delete findChild<QSerialPort*>();
 		if (checked) {
 			ui->txtError->show();
@@ -61,6 +74,7 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 		else {
 			ui->txtError->hide();
 		}
+#endif
 	});
 }
 

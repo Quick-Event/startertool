@@ -236,10 +236,10 @@ void MainWindow::initCardReader()
 	delete findChild<QSerialPort*>();
 	auto settings = SerialPortSettingsPage::loadSettings();
 	if (!settings.enabled) {
-		ui->edReadSiId->hide();
+		ui->frmSiReader->hide();
 		return;
 	}
-	ui->edReadSiId->show();
+	ui->frmSiReader->show();
 	auto *comport = new QSerialPort(settings.deviceName, this);
 	comport->setBaudRate(settings.baudRate);
 	comport->setDataBits(settings.dataBits);
@@ -248,27 +248,23 @@ void MainWindow::initCardReader()
 	shvInfo() << "Opening" << settings.deviceName;
 	ui->edReadSiId->setText({});
 	if (comport->open(QIODevice::ReadWrite)) {
-		ui->edReadSiId->setStyleSheet({});
 		ui->edReadSiId->setText(settings.deviceName);
 		connect(comport, &QSerialPort::readyRead, this, [this, comport]() {
 			auto data = comport->readAll();
 			try {
 				auto [siid, serie, cmd] = si::parseDetectMessageData(data);
 				if (cmd != si::Command::SICardRemoved) {
-					ui->edReadSiId->setStyleSheet({});
 					ui->edReadSiId->setText(QString::number(siid));
 					Application::instance()->setCardInserted(siid);
 				}
 			}
 			catch(const std::exception &e) {
-				ui->edReadSiId->setStyleSheet("background: salmon; color: black");
-				ui->edReadSiId->setText(e.what());
+				showError(QString::fromUtf8(e.what()), NecroLogLevel::Error);
 			}
 		});
 	}
 	else {
-		ui->edReadSiId->setStyleSheet("background: salmon; color: black");
-		ui->edReadSiId->setText(tr("%1 open error: %2").arg(settings.deviceName).arg(comport->errorString()));
+		showError(tr("%1 open error: %2").arg(settings.deviceName).arg(comport->errorString()), NecroLogLevel::Error);
 	}
 }
 

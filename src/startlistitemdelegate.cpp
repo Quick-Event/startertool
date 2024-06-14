@@ -84,7 +84,7 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 		painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
 	}
 	auto time_offset = corridor_status_width;
-	auto name_offset = time_offset + 9 * letter_width;
+	auto name_offset = time_offset + 7 * letter_width;
 	auto registration_offset = option.rect.width() - option.rect.height() - 8 * letter_width;
 	{
 		auto rect = option.rect;
