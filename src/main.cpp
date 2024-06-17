@@ -12,8 +12,6 @@
 #include <iostream>
 
 #ifdef ANDROID
-#include <QJniObject>
-
 #include <android/log.h>
 #include <necrolog.h>
 
@@ -90,20 +88,7 @@ int main(int argc, char *argv[])
 	shvInfo() << "======================================================================================";
 	shvInfo() << "Log tresholds:" << NecroLog::thresholdsLogInfo();
 	shvInfo() << "--------------------------------------------------------------------------------------";
-#ifdef ANDROID
-	//QJniObject javaNotification = QJniObject::fromString("ahoj");
-	//QJniObject::callStaticMethod<void>(
-	//				"org/quickbox/startertool/SerialPort",
-	//				"printMessage",
-	//				"(Landroid/content/Context;Ljava/lang/String;)V",
-	//				QNativeInterface::QAndroidApplication::context(),
-	//				javaNotification.object<jstring>());
-	QJniObject::callStaticMethod<void>(
-					"org/quickbox/startertool/SerialPort",
-					"testSerialPort",
-					"(Landroid/content/Context;)V",
-					QNativeInterface::QAndroidApplication::context());
-#endif
+
 	Application app(argc,argv, &cli_opts);
 
 	MainWindow w;

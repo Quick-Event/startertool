@@ -78,7 +78,7 @@ void SettingsDialogWidget::addPage(SettingsPage *page)
 	ly->addWidget(label);
 	ly->addWidget(page);
 	ui->stackedWidget->addWidget(frame);
-	adjustSize();
+	//adjustSize();
 	if(page_index == 0) {
 		btn->click();
 	}

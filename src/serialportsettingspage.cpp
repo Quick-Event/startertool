@@ -2,6 +2,7 @@
 #include "ui_serialportsettingspage.h"
 
 #include "si.h"
+#include "serialport.h"
 
 #include <shv/coreqt/rpc.h>
 
@@ -20,39 +21,35 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 	, ui(new Ui::SerialPortSettingsPage)
 {
 	ui->setupUi(this);
-	ui->txtError->hide();
-	connect(ui->btTest, &QPushButton::clicked, this, [this](bool checked) {
-#ifdef ANDROID
-		QJniObject javaNotification = QJniObject::fromString("ahoj");
-		QJniObject::callStaticMethod<void>(
-						"org/quickbox/startertool/SerialPort",
-						"printMessage",
-						"(Landroid/content/Context;Ljava/lang/String;)V",
-						QNativeInterface::QAndroidApplication::context(),
-						javaNotification.object<jstring>());
-#else
-		delete findChild<QSerialPort*>();
+	ui->txtLog->hide();
+	connect(ui->grpSerialPort, &QGroupBox::toggled, this, [this](bool checked) {
 		if (checked) {
-			ui->txtError->show();
-			ui->txtError->clear();
-			auto append_log = [this](const QString &line) {
-				ui->txtError->appendPlainText(line);
-				//ui->txtError->appendPlainText("\n");
-			};
+			loadPorts();
+		}
+		else {
+			ui->lstDevice->clear();
+		}
+	});
+	connect(ui->btTest, &QPushButton::clicked, this, [this](bool checked) {
+		auto append_log = [this](const QString &line) {
+			ui->txtLog->appendPlainText(line);
+		};
+
+		delete findChild<SerialPort*>();
+		if (checked) {
+			ui->txtLog->show();
+			ui->txtLog->clear();
+
 			auto device = ui->lstDevice->currentData().toString();
 			SerialPortSettings settings;
 			settings.deviceName = device;
-			auto *comport = new QSerialPort(settings.deviceName, this);
-			comport->setBaudRate(settings.baudRate);
-			comport->setDataBits(settings.dataBits);
-			comport->setParity(settings.parity);
-			comport->setStopBits(settings.stopBits);
+			auto *comport = new SerialPort(settings, this);
 			append_log(tr("Opening %1 ...").arg(device));
-			if (comport->open(QIODevice::ReadWrite)) {
+			try {
+				comport->open();
 				append_log(tr("Ok"));
-				//QByteArray data;
-				connect(comport, &QSerialPort::readyRead, this, [comport, append_log]() {
-					auto data = comport->readAll();
+				connect(comport, &SerialPort::readyRead, this, [this, comport, append_log]() {
+					auto data = comport->read();
 					try {
 						auto [siid, serie, cmd] = si::parseDetectMessageData(data);
 						if (cmd == si::Command::SICardRemoved) {
@@ -67,14 +64,13 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 					}
 				});
 			}
-			else {
-				append_log(tr("Error: %1").arg(comport->errorString()));
+			catch(const std::exception &e) {
+				append_log(tr("Error: %1").arg(QString::fromUtf8(e.what())));
 			}
 		}
 		else {
-			ui->txtError->hide();
+			ui->txtLog->hide();
 		}
-#endif
 	});
 }
 
@@ -100,12 +96,14 @@ SerialPortSettings SerialPortSettingsPage::loadSettings()
 void SerialPortSettingsPage::load()
 {
 	auto *lst = ui->lstDevice;
-	const auto infos = QSerialPortInfo::availablePorts();
-	for (const QSerialPortInfo &info : infos) {
-		lst->addItem(QStringLiteral("%1 - %2").arg(info.portName()).arg(info.description()), info.portName());
-	}
+	loadPorts();
 	auto settings = loadSettings();
-	lst->setCurrentText(settings.deviceName);
+	if (auto ix = lst->findData(settings.deviceName); ix >= 0) {
+		lst->setCurrentIndex(ix);
+	}
+	else {
+		lst->setCurrentIndex(0);
+	}
 	ui->grpSerialPort->setChecked(settings.enabled);
 }
 
@@ -119,4 +117,30 @@ void SerialPortSettingsPage::save()
 	if (!(old == current)) {
 		emit serialPortSettingsChanged();
 	}
+}
+
+void SerialPortSettingsPage::loadPorts()
+{
+	auto *lst = ui->lstDevice;
+	lst->clear();
+#ifdef ANDROID
+	auto device = QJniObject::callStaticMethod<jstring>(
+					"org/quickbox/startertool/SerialPort",
+					"findSerialPort",
+					"(Landroid/content/Context;)Ljava/lang/String;",
+					QNativeInterface::QAndroidApplication::context());
+	auto name = device.toString();
+	if (!name.isEmpty()) {
+		lst->addItem(QStringLiteral("SportIdent - %1").arg(name), name);
+	}
+	else {
+		lst->addItem(QStringLiteral("%1").arg(name), name);
+	}
+#else
+	const auto infos = QSerialPortInfo::availablePorts();
+	for (const QSerialPortInfo &info : infos) {
+		lst->addItem(QStringLiteral("%1 - %2").arg(info.portName()).arg(info.description()), info.portName());
+	}
+#endif
+	lst->setCurrentIndex(0);
 }

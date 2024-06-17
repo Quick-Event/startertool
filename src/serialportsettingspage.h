@@ -4,21 +4,11 @@
 
 #include <QSerialPort>
 
-struct SerialPortSettings
-{
-	bool enabled = false;
-	QString deviceName;
-	int baudRate = 38400;
-	QSerialPort::DataBits dataBits = QSerialPort::Data8;
-	QSerialPort::Parity parity = QSerialPort::NoParity;
-	QSerialPort::StopBits stopBits = QSerialPort::OneStop;
-
-	bool operator==(const SerialPortSettings&) const = default;
-};
-
 namespace Ui {
 class SerialPortSettingsPage;
 }
+
+struct SerialPortSettings;
 
 class SerialPortSettingsPage : public SettingsPage
 {
@@ -33,6 +23,8 @@ public:
 
 	void load() override;
 	void save() override;
+private:
+	void loadPorts();
 private:
 	Ui::SerialPortSettingsPage *ui;
 };

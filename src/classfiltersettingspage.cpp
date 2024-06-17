@@ -17,7 +17,7 @@ ClassFilterSettingsPage::ClassFilterSettingsPage(QWidget *parent)
 	ui->setupUi(this);
 	ui->buttonBar->hide();
 
-	connect(ui->btH, &QPushButton::clicked, this, [this]() {
+	connect(ui->btH, &QAbstractButton::clicked, this, [this]() {
 		auto *lst = ui->lstClasses;
 		for (auto i = 0; i < ui->lstClasses->count(); ++i) {
 			auto *item = lst->item(i);
@@ -26,7 +26,7 @@ ClassFilterSettingsPage::ClassFilterSettingsPage(QWidget *parent)
 			}
 		}
 	});
-	connect(ui->btD, &QPushButton::clicked, this, [this]() {
+	connect(ui->btD, &QAbstractButton::clicked, this, [this]() {
 		auto *lst = ui->lstClasses;
 		for (auto i = 0; i < ui->lstClasses->count(); ++i) {
 			auto *item = lst->item(i);
@@ -35,14 +35,14 @@ ClassFilterSettingsPage::ClassFilterSettingsPage(QWidget *parent)
 			}
 		}
 	});
-	connect(ui->btClear, &QPushButton::clicked, this, [this]() {
+	connect(ui->btClear, &QAbstractButton::clicked, this, [this]() {
 		auto *lst = ui->lstClasses;
 		for (auto i = 0; i < ui->lstClasses->count(); ++i) {
 			auto *item = lst->item(i);
 			item->setCheckState(Qt::Unchecked);
 		}
 	});
-	connect(ui->btInvert, &QPushButton::clicked, this, [this]() {
+	connect(ui->btInvert, &QAbstractButton::clicked, this, [this]() {
 		auto *lst = ui->lstClasses;
 		for (auto i = 0; i < ui->lstClasses->count(); ++i) {
 			auto *item = lst->item(i);

@@ -25,6 +25,7 @@ import com.hoho.android.usbserial.driver.UsbSerialPort;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SerialPort
 {
@@ -132,35 +133,18 @@ public class SerialPort
 		}
 	}
 
-    public static void printMessage(Context context, String message) {
-        try {
-            System.out.println("Message: " + message);
-            // NotificationManager m_notificationManager = (NotificationManager)
-            //         context.getSystemService(Context.NOTIFICATION_SERVICE);
-            //
-            // Notification.Builder m_builder;
-            // if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            //     int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            //     NotificationChannel notificationChannel;
-            //     notificationChannel = new NotificationChannel("Qt", "Qt Notifier", importance);
-            //     m_notificationManager.createNotificationChannel(notificationChannel);
-            //     m_builder = new Notification.Builder(context, notificationChannel.getId());
-            // } else {
-            //     m_builder = new Notification.Builder(context);
-            // }
-            //
-            // Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon);
-            // m_builder.setSmallIcon(R.drawable.icon)
-            //         .setLargeIcon(icon)
-            //         .setContentTitle("A message from Qt!")
-            //         .setContentText(message)
-            //         .setDefaults(Notification.DEFAULT_SOUND)
-            //         .setColor(Color.GREEN)
-            //         .setAutoCancel(true);
-            //
-            //m_notificationManager.notify(0, m_builder.build());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	public static String findSerialPort(Context context) {
+		// System.err.println("FFFFFFFFFFFFFFFFFF+++++++++++++++++++++++++++++++++fff");
+		UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+		UsbSerialProber usbDefaultProber = UsbSerialProber.getDefaultProber();
+		UsbSerialProber usbCustomProber = CustomProber.getCustomProber();
+		HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
+		for(UsbDevice device : devices.values()) {
+			if (device.getVendorId() == 0x10c4 && device.getProductId() == 0x800a) {
+				// sportident
+				return device.getDeviceName();
+			}
+		}
+		return "NOT FOUND";
+	}
 }

@@ -58,6 +58,7 @@ qt_add_executable(${PROJECT_NAME}
 	src/uisettingspage.cpp
 	src/stagesettingspage.cpp
 	src/serialportsettingspage.cpp
+	src/serialport.h src/serialport.cpp
 
 	startertool.qrc
 

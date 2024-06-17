@@ -13,29 +13,36 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Stage number</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item>
     <widget class="QLineEdit" name="stageNumber">
      <property name="readOnly">
       <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Start time</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item>
+    <widget class="QDateTimeEdit" name="startTime">
+     <property name="displayFormat">
+      <string>yyyy-MM-dd HH:mm:ss</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -47,13 +54,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="1" column="1">
-    <widget class="QDateTimeEdit" name="startTime">
-     <property name="displayFormat">
-      <string>yyyy-MM-dd HH:mm:ss</string>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

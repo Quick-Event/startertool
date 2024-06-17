@@ -12,6 +12,7 @@
 
 #include "startlistmodel.h"
 #include "si.h"
+#include "serialport.h"
 #include "application.h"
 #include "startlistwidget.h"
 
@@ -23,6 +24,10 @@
 #include <QMenu>
 #include <QTimer>
 #include <QSerialPort>
+
+#ifdef ANDROID
+#include <QJniObject>
+#endif
 
 namespace rpc = shv::iotqt::rpc;
 
@@ -233,24 +238,32 @@ void MainWindow::showError(const QString &msg, NecroLogLevel level)
 
 void MainWindow::initCardReader()
 {
-	delete findChild<QSerialPort*>();
+	/*
+#ifdef ANDROID
+	auto device = QJniObject::callStaticMethod<jstring>(
+					"org/quickbox/startertool/SerialPort",
+					"findSerialPort",
+					"(Landroid/content/Context;)Ljava/lang/String;",
+					QNativeInterface::QAndroidApplication::context());
+	auto name = device.toString();
+	ui->lblInfo->setText(name);
+#endif
+*/
+	delete findChild<SerialPort*>();
 	auto settings = SerialPortSettingsPage::loadSettings();
 	if (!settings.enabled) {
 		ui->frmSiReader->hide();
 		return;
 	}
 	ui->frmSiReader->show();
-	auto *comport = new QSerialPort(settings.deviceName, this);
-	comport->setBaudRate(settings.baudRate);
-	comport->setDataBits(settings.dataBits);
-	comport->setParity(settings.parity);
-	comport->setStopBits(settings.stopBits);
+	auto *comport = new SerialPort(settings, this);
 	shvInfo() << "Opening" << settings.deviceName;
 	ui->edReadSiId->setText({});
-	if (comport->open(QIODevice::ReadWrite)) {
+	try {
+		comport->open();
 		ui->edReadSiId->setText(settings.deviceName);
-		connect(comport, &QSerialPort::readyRead, this, [this, comport]() {
-			auto data = comport->readAll();
+		connect(comport, &SerialPort::readyRead, this, [this, comport]() {
+			auto data = comport->read();
 			try {
 				auto [siid, serie, cmd] = si::parseDetectMessageData(data);
 				if (cmd != si::Command::SICardRemoved) {
@@ -263,8 +276,8 @@ void MainWindow::initCardReader()
 			}
 		});
 	}
-	else {
-		showError(tr("%1 open error: %2").arg(settings.deviceName).arg(comport->errorString()), NecroLogLevel::Error);
+	catch(const std::exception &e) {
+		showError(QString::fromUtf8(e.what()), NecroLogLevel::Error);
 	}
 }
 
