@@ -29,7 +29,7 @@ constexpr int to_android_log_level(const NecroLog::Level level)
 	return ANDROID_LOG_UNKNOWN;
 }
 
-#define ANDROID_LOG(level, format, ...) __android_log_print(to_android_log_level(level), "flatline", format __VA_OPT__(,) __VA_ARGS__)
+#define ANDROID_LOG(level, format, ...) __android_log_print(to_android_log_level(level), "startertool", format __VA_OPT__(,) __VA_ARGS__)
 #endif
 
 int main(int argc, char *argv[])
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	old_message_handler = NecroLog::setMessageHandler([&old_message_handler] (NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg) {
 		std::ostringstream oss;
 		NecroLog::writeWithDefaultFormat(oss, true, level, context, msg);
-		// To see this log, use `adb logcat -T1 -s eyasmobile:D`.
+		// To see this log, use `adb logcat -T1 -s startertool:D`.
 		ANDROID_LOG(level, "%s", oss.str().c_str());
 		old_message_handler(level, context, msg);
 	});

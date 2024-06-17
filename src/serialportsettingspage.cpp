@@ -12,10 +12,6 @@
 #include <QLineEdit>
 #include <QTimer>
 
-#ifdef ANDROID
-#include <QJniObject>
-#endif
-
 SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 	: Super(tr("Serial port"), parent)
 	, ui(new Ui::SerialPortSettingsPage)

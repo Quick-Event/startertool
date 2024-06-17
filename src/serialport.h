@@ -15,30 +15,52 @@ struct SerialPortSettings
 	bool operator==(const SerialPortSettings&) const = default;
 };
 
-class AbstractSerialPort : public QObject
+#ifdef ANDROID
+#include <QJniObject>
+
+class SerialPort : public QObject
 {
 	Q_OBJECT
+	using Super = QObject;
 public:
-	explicit AbstractSerialPort(QObject *parent = nullptr) : QObject(parent) {}
+	explicit SerialPort(const SerialPortSettings &settings, QObject *parent = nullptr);
+	~SerialPort() override;
 
-	virtual void open() = 0;
-	virtual void close() = 0;
-	virtual QByteArray read() = 0;
+	void open();
+	void close();
+	QByteArray read();
 	Q_SIGNAL void readyRead();
+	QString errorString() const { return m_errorString; }
+
+	void newDataArrived(char *bytesA, int lengthA);
+	void exceptionArrived(QString strA);
+private:
+	static void registerJniNativeMethods();
+private:
+	QJniObject m_port;
+	SerialPortSettings m_settings;
+	QByteArray m_readData;
+	QString m_errorString;
 };
 
-class SerialPort : public AbstractSerialPort
+#else
+
+class SerialPort : public QObject
 {
 	Q_OBJECT
-	using Super = AbstractSerialPort;
+	using Super = QObject;
 public:
 	explicit SerialPort(const SerialPortSettings &settings, QObject *parent = nullptr);
 
-	void open() override;
-	void close() override;
-	QByteArray read() override;
+	void open();
+	void close();
+	QByteArray read();
+	Q_SIGNAL void readyRead();
+	QString errorString() const;
 private:
 	QSerialPort *m_port = nullptr;
 };
+
+#endif
 
 #endif // SERIALPORT_H
