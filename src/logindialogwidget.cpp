@@ -46,14 +46,16 @@ LoginDialogWidget::LoginDialogWidget(AutoconnectEnabled autoconnect_enbled, QWid
 		if (password.isEmpty()) {
 			password = query.queryItemValue("password");
 		}
-		auto event = query.queryItemValue("event");
-		if (event.isEmpty()) {
-			event = "QE";
+		auto event_path = query.queryItemValue("event_path");
+		if (event_path.isEmpty()) {
+			event_path = "QE";
 		}
+		auto api_key = query.queryItemValue("api_key");
 		ui->url->setText(url.toString());
 		ui->user->setText(user);
 		ui->password->setText(password);
-		ui->event->setText(event);
+		ui->eventPath->setText(event_path);
+		ui->shvApiKey->setText(api_key);
 	}
 	auto auto_connect = settings.value("autoConnect").toBool();
 	ui->autoConnect->setChecked(auto_connect);
@@ -88,7 +90,8 @@ QUrl LoginDialogWidget::connectionUrl() const
 	QUrlQuery q;
 	q.addQueryItem("user", ui->user->text());
 	q.addQueryItem("password", ui->password->text());
-	q.addQueryItem("event", ui->event->text());
+	q.addQueryItem("event_path", ui->eventPath->text());
+	q.addQueryItem("api_key", ui->shvApiKey->text());
 	ret.setQuery(q);
 	return ret;
 }

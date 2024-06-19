@@ -73,7 +73,8 @@ bool Application::isBrokerConnected() const
 
 void Application::connectToBroker(const QUrl &connection_url)
 {
-	m_eventName = QUrlQuery(connection_url.query()).queryItemValue("event");
+	m_eventShvPath = QUrlQuery(connection_url.query()).queryItemValue("event_path");
+	m_shvApiKey = QUrlQuery(connection_url.query()).queryItemValue("api_key");
 	if (m_rpcConnection) {
 		m_rpcConnection->disconnect();
 		m_rpcConnection->deleteLater();
@@ -181,10 +182,15 @@ void Application::loadCurrentStageConfig()
 		[this](const RpcValue &result) {
 			auto config = shv::coreqt::rpc::rpcValueToQVariant(result).toMap();
 			m_currentStageConfig.stageNumber = config.value("id").toInt();
-			//m_currentStageConfig.startTime = config.value("startDateTime").toDateTime();
-			auto dtm = QDateTime::currentDateTime();
-			auto tm = dtm.time();
-			m_currentStageConfig.startTime = QDateTime(dtm.date(), QTime(tm.hour(), tm.minute(), 0)).addSecs(-5*60);
+			static constexpr bool FAKE_START = false;
+			if (cliOptions()->isFakeStageStartTime()) {
+				auto dtm = QDateTime::currentDateTime();
+				auto tm = dtm.time();
+				m_currentStageConfig.startTime = QDateTime(dtm.date(), QTime(tm.hour(), tm.minute(), 0)).addSecs(-5*60);
+			}
+			else {
+				m_currentStageConfig.startTime = config.value("startDateTime").toDateTime();
+			}
 		}
 	);
 }
@@ -216,7 +222,8 @@ void Application::callShvMethod(const QString &shv_path,
 		auto *rpcc = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
 				->setShvPath(shv_path)
 				->setMethod(method)
-				->setParams(shv::coreqt::rpc::qVariantToRpcValue(params));
+				->setParams(shv::coreqt::rpc::qVariantToRpcValue(params))
+				->setUserId(QStringLiteral("api_key=%1").arg(m_shvApiKey).toStdString());
 		if (rpcc) {
 			if ((success_callback || error_callback) && !context) {
 				shvError() << "Cannot use calbacks without context object set.";
@@ -257,7 +264,7 @@ void Application::callShvApiMethod(const QString &shvapi_path,
 								   std::function<void (const RpcValue &)> success_callback,
 								   std::function<void (const RpcError &)> error_callback)
 {
-	QString shv_path = "test/" + m_eventName + '/' + shvapi_path;
+	QString shv_path = m_eventShvPath + '/' + shvapi_path;
 	callShvMethod(shv_path, method, params, context, success_callback, error_callback);
 }
 

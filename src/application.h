@@ -91,7 +91,8 @@ private:
 private:
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	AppCliOptions *m_cliOptions = nullptr;
-	QString m_eventName;
+	QString m_eventShvPath;
+	QString m_shvApiKey;
 	StageConfig m_currentStageConfig;
 	QDateTime m_currentTime;
 	unsigned m_cardRead = 0;
