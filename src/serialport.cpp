@@ -1,45 +1,46 @@
 #include "serialport.h"
+#include "application.h"
 
 #ifdef ANDROID
 #include <QCoreApplication>
 
 static char V_jniClassName[] {"org/quickbox/startertool/SerialPort"};
 
-static void jniDeviceNewData(JNIEnv *envA, jobject thizA, jlong userDataA, jbyteArray dataA)
+static void jniDeviceNewData(JNIEnv *envA, jobject thizA, jbyteArray dataA)
 {
 	Q_UNUSED(thizA);
 
-	if (userDataA != 0) {
-		jbyte *bytesL = envA->GetByteArrayElements(dataA, NULL);
-		jsize lenL = envA->GetArrayLength(dataA);
-		((SerialPort *)userDataA)->newDataArrived((char *)bytesL, lenL);
-		envA->ReleaseByteArrayElements(dataA, bytesL, JNI_ABORT);
-	}
+	jbyte *bytesL = envA->GetByteArrayElements(dataA, NULL);
+	jsize lenL = envA->GetArrayLength(dataA);
+	QByteArray data((char *)bytesL, lenL);
+	envA->ReleaseByteArrayElements(dataA, bytesL, JNI_ABORT);
+	Application::instance()->emitAndroidSerialDataArrived(data);
 }
 
-static void jniDeviceException(JNIEnv *envA, jobject thizA, jlong userDataA, jstring messageA)
+static void jniDeviceException(JNIEnv *envA, jobject thizA, jstring messageA)
 {
 	Q_UNUSED(thizA);
 
-	if (userDataA != 0) {
-		const char *stringL = envA->GetStringUTFChars(messageA, NULL);
-		QString strL = QString::fromUtf8(stringL);
-		envA->ReleaseStringUTFChars(messageA, stringL);
-		if (envA->ExceptionCheck()) {
-			envA->ExceptionClear();
-		}
-		((SerialPort *)userDataA)->exceptionArrived(strL);
+	const char *stringL = envA->GetStringUTFChars(messageA, NULL);
+	QString msg = QString::fromUtf8(stringL);
+	envA->ReleaseStringUTFChars(messageA, stringL);
+	if (envA->ExceptionCheck()) {
+		envA->ExceptionClear();
 	}
+	Application::instance()->emitAndroidSerialExceptionArrived(msg);
 }
 
 SerialPort::SerialPort(const SerialPortSettings &settings, QObject *parent)
 	: Super(parent)
 	, m_settings(settings)
 {
+	registerJniNativeMethods();
+	auto *app = Application::instance();
+	connect(app, &Application::androidSerialDataArrived, this, &SerialPort::onNewDataArrived);
+	connect(app, &Application::androidSerialExceptionArrived, this, &SerialPort::onExceptionArrived);
 	m_port = QJniObject::callStaticObjectMethod(V_jniClassName,
 												"create",
-												"(J)Lorg/quickbox/startertool/SerialPort;",
-												(jlong)this);
+												"()Lorg/quickbox/startertool/SerialPort;");
 }
 
 SerialPort::~SerialPort()
@@ -49,7 +50,7 @@ SerialPort::~SerialPort()
 
 void SerialPort::open()
 {
-	m_port.callMethod<void>("test", "()V");
+	//m_port.callMethod<void>("test", "()V");
 	m_port.callMethod<void>("open", "(Landroid/content/Context;)V", QNativeInterface::QAndroidApplication::context());
 	if (!errorString().isEmpty()) {
 		throw std::runtime_error("Cannot open serial port for reading: " + errorString().toStdString());
@@ -77,23 +78,21 @@ void SerialPort::registerJniNativeMethods()
 		registered = true;
 		// register the native methods first, ideally it better be done with the app start
 		const JNINativeMethod methods[] = {
-			{"nativeDeviceNewData", "(J[B)V", reinterpret_cast<void *>(jniDeviceNewData)},
-			{"nativeDeviceException", "(JLjava/lang/String;)V", reinterpret_cast<void *>(jniDeviceException)}
+			{"nativeDeviceNewData", "([B)V", reinterpret_cast<void *>(jniDeviceNewData)},
+			{"nativeDeviceException", "(Ljava/lang/String;)V", reinterpret_cast<void *>(jniDeviceException)}
 		};
 		QJniEnvironment env;
 		env.registerNativeMethods(V_jniClassName, methods, 2);
 	}
 }
 
-void SerialPort::newDataArrived(char *bytesA, int lengthA)
+void SerialPort::onNewDataArrived(QByteArray data)
 {
-	m_readData.append(bytesA, lengthA);
+	m_readData.append(data);
 	emit readyRead();
 }
 
-
-
-void SerialPort::exceptionArrived(QString strA)
+void SerialPort::onExceptionArrived(QString strA)
 {
 	m_errorString = strA;
 }

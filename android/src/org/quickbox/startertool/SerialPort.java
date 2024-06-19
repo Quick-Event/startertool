@@ -24,26 +24,21 @@ public class SerialPort implements SerialInputOutputManager.Listener
     private UsbSerialPort usbSerialPort = null;
     //private UsbPermission usbPermission = UsbPermission.Unknown;
     private boolean isopen = false;
-    private long qtData = 0;
     private static final boolean withIoManager = true;
     private SerialInputOutputManager usbIoManager;
 
-    public SerialPort(long qt_data) {
-        qtData = qt_data;
-    }
-
-    private static native void nativeDeviceException(long qt_data, String message);
-    private static native void nativeDeviceNewData(long qt_data, byte[] data);
+    private static native void nativeDeviceException(String message);
+    private static native void nativeDeviceNewData(byte[] data);
 
     @Override
     public void onNewData(byte[] data) {
-        nativeDeviceNewData(qtData, data);
+        nativeDeviceNewData(data);
     }
 
     @Override
     public void onRunError(Exception e) {
         System.err.println("Run error: " + e.getMessage());
-        nativeDeviceException(qtData, e.getMessage());
+        nativeDeviceException(e.getMessage());
         //close();
     }
 
@@ -59,10 +54,9 @@ public class SerialPort implements SerialInputOutputManager.Listener
         return "";
     }
 
-    public static SerialPort create(long qt_data)
+    public static SerialPort create()
     {
-        SerialPort ret = new SerialPort(qt_data);
-        return ret;
+        return new SerialPort();
     }
 
 	public boolean isOpen()
@@ -137,13 +131,13 @@ public class SerialPort implements SerialInputOutputManager.Listener
             }
             catch (Exception e) {
                 System.err.println("connection failed: " + e.getMessage());
-				nativeDeviceException(qtData, "connection failed: " + e.getMessage());
+				nativeDeviceException("connection failed: " + e.getMessage());
                 close();
             }
             //port.close();
         } catch (Exception e) {
             System.err.println("open failed: " + e.getMessage());
-			nativeDeviceException(qtData, "open failed: " + e.getMessage());
+			nativeDeviceException("open failed: " + e.getMessage());
             //e.printStackTrace();
         }
     }

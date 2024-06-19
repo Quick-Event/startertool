@@ -31,10 +31,9 @@ public:
 	QByteArray read();
 	Q_SIGNAL void readyRead();
 	QString errorString() const { return m_errorString; }
-
-	void newDataArrived(char *bytesA, int lengthA);
-	void exceptionArrived(QString strA);
 private:
+	void onNewDataArrived(QByteArray data);
+	void onExceptionArrived(QString strA);
 	static void registerJniNativeMethods();
 private:
 	QJniObject m_port;

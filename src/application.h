@@ -77,6 +77,12 @@ public:
 	};
 	void playAlert(Alert alert);
 	void playSound(const QString &file);
+#ifdef ANDROID
+	void emitAndroidSerialDataArrived(QByteArray data) { emit androidSerialDataArrived(data); }
+	void emitAndroidSerialExceptionArrived(QString msg) { emit androidSerialExceptionArrived(msg); }
+#endif
+	Q_SIGNAL void androidSerialDataArrived(QByteArray data);
+	Q_SIGNAL void androidSerialExceptionArrived(QString msg);
 private:
 	void loadStyle();
 	void subscribeChanges();
