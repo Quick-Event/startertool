@@ -6,6 +6,7 @@
 #include "unconfirmedchangesdialogwidget.h"
 
 #include "serialportsettingspage.h"
+#include "androidserialportsettingspage.h"
 #include "stagesettingspage.h"
 #include "classfiltersettingspage.h"
 #include "uisettingspage.h"
@@ -56,26 +57,6 @@ MainWindow::MainWindow(QWidget *parent) :
 		menu->addAction(a);
 	}
 	{
-		auto *a = new QAction(tr("Settings"));
-		connect(a, &QAction::triggered, this, [this]() {
-			auto *widget = new SettingsDialogWidget();
-
-			widget->addPage(new UiSettingsPage());
-			widget->addPage(new StageSettingsPage());
-			widget->addPage(new ClassFilterSettingsPage());
-			auto *serial_port_settings_page = new SerialPortSettingsPage();
-			widget->addPage(serial_port_settings_page);
-			connect(serial_port_settings_page, &SerialPortSettingsPage::serialPortSettingsChanged, this, [this]() {
-				initCardReader();
-			});
-
-			showDialogWidget(widget);
-			connect(widget, &SettingsDialogWidget::destroyed, Application::instance(), &Application::emitSettingsChanged);
-
-		});
-		menu->addAction(a);
-	}
-	{
 		auto *a = new QAction(tr("Unconfirmed changes"));
 		connect(a, &QAction::triggered, this, [this]() {
 			auto *widget = new UnconfirmedChangesDialogWidget();
@@ -85,6 +66,31 @@ MainWindow::MainWindow(QWidget *parent) :
 			auto rv = shv::coreqt::rpc::qVariantToRpcValue(chngmap);
 			widget->setText(QString::fromStdString(rv.toCpon("  ")));
 			showDialogWidget(widget);
+		});
+		menu->addAction(a);
+	}
+	menu->addSeparator();
+	{
+		auto *a = new QAction(tr("Settings"));
+		connect(a, &QAction::triggered, this, [this]() {
+			auto *widget = new SettingsDialogWidget();
+
+			widget->addPage(new UiSettingsPage());
+			widget->addPage(new StageSettingsPage());
+			widget->addPage(new ClassFilterSettingsPage());
+#ifdef ANDROID
+			auto *serial_port_settings_page = new AndroidSerialPortSettingsPage();
+			widget->addPage(serial_port_settings_page);
+#else
+			auto *serial_port_settings_page = new SerialPortSettingsPage();
+			widget->addPage(serial_port_settings_page);
+			connect(serial_port_settings_page, &SerialPortSettingsPage::serialPortSettingsChanged, this, [this]() {
+				initCardReader();
+			});
+#endif
+			showDialogWidget(widget);
+			connect(widget, &SettingsDialogWidget::destroyed, Application::instance(), &Application::emitSettingsChanged);
+
 		});
 		menu->addAction(a);
 	}
@@ -238,26 +244,30 @@ void MainWindow::showError(const QString &msg, NecroLogLevel level)
 
 void MainWindow::initCardReader()
 {
-	/*
+	bool serial_port_enabled = false;
+	QString device_name;
+	auto settings = SerialPortSettingsPage::loadSettings();
 #ifdef ANDROID
 	auto device = QJniObject::callStaticMethod<jstring>(
 					"org/quickbox/startertool/SerialPort",
 					"findSerialPort",
 					"(Landroid/content/Context;)Ljava/lang/String;",
 					QNativeInterface::QAndroidApplication::context());
-	auto name = device.toString();
-	ui->lblInfo->setText(name);
-#endif
-*/
+	device_name = device.toString();
+	serial_port_enabled = !device_name.isEmpty();
+#else
 	delete findChild<SerialPort*>();
-	auto settings = SerialPortSettingsPage::loadSettings();
-	if (!settings.enabled) {
+	serial_port_enabled = settings.enabled;
+	device_name = settings.deviceName;
+#endif
+	if (!serial_port_enabled) {
 		ui->frmSiReader->hide();
 		return;
 	}
+
 	ui->frmSiReader->show();
 	auto *comport = new SerialPort(settings, this);
-	shvInfo() << "Opening" << settings.deviceName;
+	shvInfo() << "Opening" << device_name;
 	ui->edReadSiId->setText({});
 	try {
 		comport->open();

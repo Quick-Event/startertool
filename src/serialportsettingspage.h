@@ -2,8 +2,6 @@
 
 #include "settingspage.h"
 
-#include <QSerialPort>
-
 namespace Ui {
 class SerialPortSettingsPage;
 }
