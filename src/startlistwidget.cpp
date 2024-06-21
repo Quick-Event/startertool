@@ -86,11 +86,17 @@ void StartListWidget::scrollToStartTime(const QDateTime &tm)
 {
 	for (auto row = 0; row < m_model->rowCount(); ++row) {
 		auto start = m_model->roleValue(row, StartListModel::Role::StartDateTime).toDateTime();
-		if (start <= tm) {
+		if (start >= tm) {
+			// shvInfo() << tm << "scroll to:" << start;
 			auto ix = m_model->index(row, 0);
 			ui->tableView->scrollTo(ix, QTableView::PositionAtTop);
+			return;
 		}
 	}
+	// scroll to end
+	// shvInfo() << tm << "scroll to end";
+	auto ix = m_model->index(m_model->rowCount() - 1, 0);
+	ui->tableView->scrollTo(ix, QTableView::PositionAtTop);
 }
 
 void StartListWidget::onCardInserted(unsigned int siid)
