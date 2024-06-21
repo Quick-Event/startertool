@@ -12,6 +12,7 @@ StartListTableView::StartListTableView(QWidget *parent)
 	: Super(parent)
 {
 	setAttribute(Qt::WA_AcceptTouchEvents);
+	viewport()->installEventFilter(this);
 }
 
 void StartListTableView::onMousePress(const QPoint &pos)
@@ -37,7 +38,6 @@ void StartListTableView::onMousePress(const QPoint &pos)
 
 bool StartListTableView::event(QEvent *event)
 {
-	//shvDebug() << "event:" << event->type();
 	if (event->type() == QEvent::TouchBegin) {
 		auto *te = static_cast<QTouchEvent*>(event);
 		if (te->pointCount() == 1) {
@@ -103,6 +103,19 @@ bool StartListTableView::event(QEvent *event)
 		}
 	}
 	return Super::event(event);
+}
+
+bool StartListTableView::eventFilter(QObject *obj, QEvent *event)
+{
+	if (event->type() == QEvent::MouseButtonPress) {
+		auto *me = static_cast<QMouseEvent*>(event);
+		if (me->button() == Qt::LeftButton) {
+			//shvInfo() << "left mouse event:" << event->type();
+			onMousePress(me->pos());
+			return true;
+		}
+	}
+	return false;
 }
 
 

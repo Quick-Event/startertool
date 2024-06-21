@@ -2,7 +2,7 @@
 #define STARTLISTTABLEVIEW_H
 
 #include <QTableView>
-#include <QElapsedTimer>
+//#include <QElapsedTimer>
 
 class StartListTableView : public QTableView
 {
@@ -16,6 +16,7 @@ public:
 	Q_SIGNAL void manualScroll();
 protected:
 	bool event(QEvent *event) override;
+	bool eventFilter(QObject *obj, QEvent *event) override;
 private:
 	void onMousePress(const QPoint &pos);
 private:
