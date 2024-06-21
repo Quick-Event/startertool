@@ -21,6 +21,7 @@
         <file>images/play.svg</file>
 
         <file>style/style.css</file>
+        <file>style/style-dark.css</file>
 
         <file>sound/buzz.wav</file>
         <file>sound/ding.wav</file>

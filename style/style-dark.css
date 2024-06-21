@@ -1,0 +1,22 @@
+QPushButton {icon-size: 32px}
+QPushButton {background-color: darkgray}
+QPushButton#btGotoNow:checked {background-color: orange}
+
+/*
+QToolButton {border-radius: 6px; background-color: #e5e5e5; border: 2px solid #d9d9d9;}
+
+QFrame[cssClass = "mainWidgetTittleBar"] {background-color: #51a452;}
+QFrame[cssClass = "settingsWidgetTittleBar"] {background-color: #016ecd;}
+QFrame[cssClass = "connectionWidgetTittleBar"] {background-color: #4aafcd;}
+QFrame[cssClass = "alarmsWidgetTittleBar"] {background-color: #faa632;}
+
+QWidget[cssClass = "connectionNotConnected"] {background-color: #b2b2b2;}
+QWidget[cssClass = "connectionConnecting"] {background-color: #7f7f7f;}
+QWidget[cssClass = "connectionSocketConnected"] {background-color: #00ff00;}
+QWidget[cssClass = "connectionBrokerConnected"] {background-color: #6abe6c;}
+QWidget[cssClass = "connectionConnectionError"] {background-color: #ff0000;}
+
+QLabel[cssClass = "errorLabel"] {font-weight: bold; color: white; background-color: red;}
+
+QWidget>QFrame#lblTittle {color: white;}
+*/

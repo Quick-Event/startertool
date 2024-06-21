@@ -21,6 +21,7 @@
 #include <QTimer>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+//#include <QStyleHints>
 
 using namespace shv::chainpack;
 
@@ -159,9 +160,11 @@ void Application::playSound(const QString &file)
 
 void Application::loadStyle()
 {
-	QFile file(":/style/style.css");
+	auto fn = ":/style/style-dark.css";
+	//auto fn = (QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark)? ":/style/style-dark.css": ":/style/style.css";
+	QFile file(fn);
 	if(!file.open(QIODevice::ReadOnly)) {
-		shvWarning() << "Failed to load style.css";
+		shvWarning() << "Failed to load style file:" << fn;
 	}
 	else {
 		setStyleSheet(file.readAll());
