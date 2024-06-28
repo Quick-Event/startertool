@@ -1,11 +1,13 @@
 # startertool
 QuickEvent starter tool
 
+https://quick-event.github.io/startertool/
+
 Features:
 * [x] two way on-line synchronisation with QuickEvent based on https://github.com/silicon-heaven/libshv
 * [x] card reader support
 * [x] acoustic notification
-* [ ] Android build
+* [x] Android build
 * [ ] published on Google Play
 * [ ] public SHV broker for event organizers
 
