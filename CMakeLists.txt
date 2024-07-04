@@ -65,7 +65,6 @@ qt_add_executable(${PROJECT_NAME}
 
 	android/src/org/quickbox/startertool/SerialPort.java
 	android/src/org/quickbox/startertool/CustomProber.java
-
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -77,6 +76,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 	MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 	MACOSX_BUNDLE TRUE
 	WIN32_EXECUTABLE TRUE
+	QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
+	QT_ANDROID_TARGET_SDK_VERSION 34
+	QT_ANDROID_VERSION_CODE 1
+	QT_ANDROID_VERSION_NAME 0.0.1
 )
 
 if(ANDROID)
