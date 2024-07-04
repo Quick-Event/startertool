@@ -13,6 +13,7 @@ StartListModel::StartListModel(QObject *parent)
 	connect(app, &Application::runChanged, this, &StartListModel::applyRemoteRecordChanges);
 	connect(this, &StartListModel::localRecordUpdated, Application::instance(), &Application::updateRun);
 	connect(app, &Application::currentTimeChanged, this, [this](const QDateTime &current_time) {
+		// shvInfo() << "current time:" << current_time;
 		if (m_starterTime.time().minute() != current_time.time().minute()) {
 			m_starterTime = current_time;
 
@@ -28,7 +29,7 @@ StartListModel::StartListModel(QObject *parent)
 			//ui->tableView->update();
 			for (auto row = 0; row < rowCount(); ++row) {
 				auto start = roleValue(row, Role::StartDateTime).toDateTime();
-				auto diff = start.secsTo(line_time);
+				auto diff = line_time.secsTo(start);
 				if (diff >= 0 && diff <= (60 * 4)) {
 					auto ix = index(row, 0);
 					emit dataChanged(ix, ix);
@@ -117,9 +118,11 @@ QVariant StartListModel::roleValue(int row, Role role) const
 		else if (sec_diff <= 2*60) corridor = C2;
 		else if (sec_diff <= 3*60) corridor = C3;
 		else corridor = CEarly;
-		//shvDebug() << "row:" << row << "Corridor:" << static_cast<int>(corridor)
-		//		   << "starter:" << m_starterTime.toString(Qt::ISODate)
-		//			<< "start:" << start_time.toString(Qt::ISODate);
+		shvDebug() << "name:" << roleValue(row, Role::CompetitorName).toString()
+				   << "sec diff:" << sec_diff
+				   << "Corridor:" << static_cast<int>(corridor)
+				   << "starter:" << m_starterTime.toString(Qt::ISODate)
+					<< "start:" << start_time.toString(Qt::ISODate);
 		return static_cast<int>(corridor);
 	}
 	if (auto col = roleToColumn(role); col.has_value()) {

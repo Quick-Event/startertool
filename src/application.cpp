@@ -43,11 +43,11 @@ Application::Application(int &argc, char **argv, AppCliOptions* cli_opts)
 	{
 		auto *tm = new QTimer(this);
 		connect(tm, &QTimer::timeout, this, [this]() {
-			auto dt = QDateTime::currentDateTime();
+			auto dt = QDateTime::currentDateTime().toTimeZone(QTimeZone::systemTimeZone());
 			auto tm = dt.time();
 			if (tm.second() != m_currentTime.time().second()) {
-				auto tm = dt.time();
-				m_currentTime = QDateTime(dt.date(), QTime(tm.hour(), tm.minute(), tm.second()));
+				//auto tm = dt.time();
+				m_currentTime = dt;
 				emit currentTimeChanged(dt);
 			}
 		});
