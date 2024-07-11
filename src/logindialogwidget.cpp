@@ -4,9 +4,12 @@
 #include "application.h"
 #include "appclioptions.h"
 
+#include <shv/coreqt/log.h>
+
 #include <QSettings>
 #include <QTimer>
 #include <QUrlQuery>
+#include <QClipboard>
 
 LoginDialogWidget::LoginDialogWidget(AutoconnectEnabled autoconnect_enbled, QWidget *parent)
 	: QWidget(parent)
@@ -32,31 +35,8 @@ LoginDialogWidget::LoginDialogWidget(AutoconnectEnabled autoconnect_enbled, QWid
 	if (url_str.isEmpty()) {
 		url_str = "tcp://nirvana.elektroline.cz:3756";
 	}
-	auto url = QUrl(url_str);
-	if (url.isValid()) {
-		auto user = url.userName();
-		url.setUserName(QString());
-		auto password = url.password();
-		url.setPassword(QString());
-		auto query = QUrlQuery(url);
-		url.setQuery(QString());
-		if (user.isEmpty()) {
-			user = query.queryItemValue("user");
-		}
-		if (password.isEmpty()) {
-			password = query.queryItemValue("password");
-		}
-		auto event_path = query.queryItemValue("event_path");
-		if (event_path.isEmpty()) {
-			event_path = "QE";
-		}
-		auto api_key = query.queryItemValue("api_key");
-		ui->url->setText(url.toString());
-		ui->user->setText(user);
-		ui->password->setText(password);
-		ui->eventPath->setText(event_path);
-		ui->shvApiKey->setText(api_key);
-	}
+	ui->url->setText(url_str);
+	parseConnectionUrl();
 	auto auto_connect = settings.value("autoConnect").toBool();
 	ui->autoConnect->setChecked(auto_connect);
 	connect(ui->btConnect, &QPushButton::clicked, this, [this]() {
@@ -65,6 +45,12 @@ LoginDialogWidget::LoginDialogWidget(AutoconnectEnabled autoconnect_enbled, QWid
 	if (autoconnect_enbled == AutoconnectEnabled::Yes) {
 		QTimer::singleShot(0, this, &LoginDialogWidget::checkAutoConnect);
 	}
+	connect(ui->url, &QLineEdit::editingFinished, this, &LoginDialogWidget::parseConnectionUrl);
+	connect(ui->btPasteUrl, &QAbstractButton::clicked, this, [this]() {
+		auto urlstr = QGuiApplication::clipboard()->text();
+		ui->url->setText(urlstr);
+		parseConnectionUrl();
+	});
 }
 
 LoginDialogWidget::~LoginDialogWidget()
@@ -74,6 +60,34 @@ LoginDialogWidget::~LoginDialogWidget()
 	settings.setValue("autoConnect", ui->autoConnect->isChecked());
 
 	delete ui;
+}
+
+void LoginDialogWidget::parseConnectionUrl()
+{
+	auto url_str = ui->url->text();
+	auto url = QUrl(url_str);
+	if (url.isValid()) {
+		auto user = url.userName();
+		url.setUserName(QString());
+		auto password = url.password();
+		url.setPassword(QString());
+		auto event_path = url.path().mid(1); // cut leading slash
+		url.setPath({});
+		auto query = QUrlQuery(url);
+		url.setQuery(QString());
+		if (user.isEmpty()) {
+			user = query.queryItemValue("user");
+		}
+		if (password.isEmpty()) {
+			password = query.queryItemValue("password");
+		}
+		auto api_key = query.queryItemValue("api_key");
+		ui->url->setText(url.toString());
+		ui->user->setText(user);
+		ui->password->setText(password);
+		ui->eventPath->setText(event_path);
+		ui->shvApiKey->setText(api_key);
+	}
 }
 
 void LoginDialogWidget::checkAutoConnect()
@@ -87,12 +101,13 @@ void LoginDialogWidget::checkAutoConnect()
 QUrl LoginDialogWidget::connectionUrl() const
 {
 	QUrl ret(ui->url->text());
+	ret.setPath('/' + ui->eventPath->text());
 	QUrlQuery q;
 	q.addQueryItem("user", ui->user->text());
 	q.addQueryItem("password", ui->password->text());
-	q.addQueryItem("event_path", ui->eventPath->text());
 	q.addQueryItem("api_key", ui->shvApiKey->text());
 	ret.setQuery(q);
+	// shvError() << "connection url:" << ret.toString();
 	return ret;
 }
 

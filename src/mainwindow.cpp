@@ -38,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	setWindowTitle(tr("Starter tool"));
+	setWindowIcon(QIcon(":/images/startertool.svg"));
+
 	ui->lblError->hide();
 	ui->frmFind->hide();
 
@@ -215,6 +218,7 @@ void MainWindow::showDialogWidget(QWidget *widget)
 
 void MainWindow::showError(const QString &msg, NecroLogLevel level)
 {
+	shvDebug() << "shw error:" << NecroLog::levelToString(level) << msg;
 	if (msg.isEmpty()) {
 		ui->lblError->hide();
 	}

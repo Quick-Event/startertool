@@ -16,6 +16,7 @@ public:
 	explicit LoginDialogWidget(AutoconnectEnabled autoconnect_enbled, QWidget *parent = nullptr);
 	~LoginDialogWidget();
 private:
+	void parseConnectionUrl();
 	QUrl connectionUrl() const;
 	void connectToBroker();
 	void checkAutoConnect();

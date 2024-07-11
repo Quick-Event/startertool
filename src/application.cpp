@@ -74,7 +74,7 @@ bool Application::isBrokerConnected() const
 
 void Application::connectToBroker(const QUrl &connection_url)
 {
-	m_eventShvPath = QUrlQuery(connection_url.query()).queryItemValue("event_path");
+	m_eventShvPath = connection_url.path().mid(1);
 	m_shvApiKey = QUrlQuery(connection_url.query()).queryItemValue("api_key");
 	if (m_rpcConnection) {
 		m_rpcConnection->disconnect();
@@ -226,7 +226,7 @@ void Application::callShvMethod(const QString &shv_path,
 				->setShvPath(shv_path)
 				->setMethod(method)
 				->setParams(shv::coreqt::rpc::qVariantToRpcValue(params))
-				->setUserId(QStringLiteral("api_key=%1").arg(m_shvApiKey).toStdString());
+				->setUserId(RpcValue::Map{{"apiKey", m_shvApiKey.toStdString()}});
 		if (rpcc) {
 			if ((success_callback || error_callback) && !context) {
 				shvError() << "Cannot use calbacks without context object set.";
@@ -244,7 +244,9 @@ void Application::callShvMethod(const QString &shv_path,
 			}
 			else {
 				connect(rpcc, &shv::iotqt::rpc::RpcCall::error, [shv_path, method](const ::RpcError &error) {
-					shvError() << "RPC method call error, path:" << shv_path << "method:" << method << "error:" << error.toString();
+					auto errmsg = "RPC method call error, path: " + shv_path + " method: " + method + " error: " + QString::fromStdString(error.toString());
+					shvError() << errmsg;
+					Application::instance()->showError(errmsg, NecroLogLevel::Error);
 				});
 			}
 			rpcc->start();
