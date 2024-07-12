@@ -184,7 +184,7 @@ void StartListModel::updateLocalRecord(int run_id, const QMap<StartListModel::Ro
 						auto corridor_time = val.toDateTime();
 						if (!checkCorridorTime(row, corridor_time)) {
 							emit corridorTimeCheckError();
-							continue;
+							//continue;
 						}
 					}
 					chngmap[colname.value()] = v2;

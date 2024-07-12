@@ -26,7 +26,8 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 	int letter_width = line_height / 2;
 	int corridor_status_width = letter_width;
 
-	auto start_time = index.data(StartListModel::Role::StartDateTime).toDateTime();
+	auto start_time_msec = index.data(StartListModel::Role::StartTime).toInt();
+	auto start_date_time = index.data(StartListModel::Role::StartDateTime).toDateTime();
 	auto corridor_time = index.data(StartListModel::Role::CorridorTime).toDateTime();
 
 	constexpr auto CORRIDOR1_COLOR = Qt::red;
@@ -136,7 +137,17 @@ void StartListItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
 		painter->setPen(pen);
 		auto rect = option.rect;
 		rect.translate(time_offset, 0);
-		painter->drawText(rect, start_time.toString("hh:mm:ss"));
+		if (m_relativeStartTime) {
+			int min = start_time_msec / 1000 / 60;
+			int sec = start_time_msec / 1000 % 60;
+			painter->drawText(rect, QStringLiteral("%1:%2")
+							  .arg(min, 3, 10, QChar('0'))
+							  .arg(sec, 2, 10, QChar('0'))
+							  );
+		}
+		else {
+			painter->drawText(rect, start_date_time.toString("hh:mm:ss"));
+		}
 	}
 	{
 		auto rect = option.rect;

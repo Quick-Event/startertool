@@ -108,8 +108,8 @@ void Application::updateRun(int run_id, const QVariant &record)
 
 void Application::setCardInserted(unsigned int siid)
 {
-	if (siid == m_cardRead)
-		return;
+	//if (siid == m_cardRead)
+	//	return;
 	m_cardRead = siid;
 	if (siid > 0) {
 		playAlert(Application::Alert::CardInserted);

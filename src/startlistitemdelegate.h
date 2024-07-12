@@ -16,7 +16,10 @@ public:
 	StartListItemDelegate(QObject *parent = nullptr);
 	~StartListItemDelegate() override = default;
 public:
+	void setRelativeStartTime(bool on) { m_relativeStartTime = on; }
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+private:
+	bool m_relativeStartTime = false;
 };
 
 #endif // STARTLISTITEMDELEGATE_H

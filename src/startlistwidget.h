@@ -27,6 +27,7 @@ public:
 protected:
 	void resizeEvent(QResizeEvent *event) override;
 private:
+	void applySettings();
 	void reload();
 	void updateHeadersSectionSizes();
 private:

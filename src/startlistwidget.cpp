@@ -40,7 +40,9 @@ StartListWidget::StartListWidget(QWidget *parent) :
 	connect(m_model, &StartListModel::corridorTimeCheckError, []() {
 		Application::instance()->playAlert(Application::Alert::CorridorTimeCheckError);
 	});
-	connect(app, &Application::settingsChanged, this, &StartListWidget::reload);
+	connect(app, &Application::settingsChanged, this, [this]() {
+		reload();
+	});
 	connect(ui->tableView, &StartListTableView::editButtonPressed, this, [this](int run_id) {
 		auto *widget = new RunWidget(m_model);
 		widget->load(run_id);
@@ -106,9 +108,9 @@ void StartListWidget::onCardInserted(unsigned int siid)
 		auto siid2 = m_model->roleValue(row, StartListModel::Role::SiId).toUInt();
 		if (siid == siid2) {
 			auto run_id = m_model->roleValue(row, StartListModel::Role::RunId).toInt();
-			//shvDebug() << "row:" << run_id << "dt:" << corridor_time.toString();
 			QMap<StartListModel::Role, QVariant> record;
 			record.insert(StartListModel::CorridorTime, QDateTime::currentDateTime());
+			//shvDebug() << "row:" << run_id << "record:" << shv::coreqt::rpc::qVariantToPrettyString();
 			m_model->updateLocalRecord(run_id, record);
 			setSelectedRow(row);
 			return;
@@ -124,8 +126,17 @@ void StartListWidget::resizeEvent(QResizeEvent *event)
 	updateHeadersSectionSizes();
 }
 
+void StartListWidget::applySettings()
+{
+	auto ui_settings = UiSettingsPage::loadSettings();
+	auto *delegate = findChild<StartListItemDelegate*>();
+	Q_ASSERT(delegate);
+	delegate->setRelativeStartTime(ui_settings.relativeStartTime);
+}
+
 void StartListWidget::reload()
 {
+	applySettings();
 	auto class_filter = ClassFilterSettingsPage::checkedClasses();
 	QVariantMap param;
 	param["orderBy"] = "runs.startTimeMs";
