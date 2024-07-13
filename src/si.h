@@ -29,6 +29,6 @@ enum Command {
 	//DriverInfo=0x1000 /// Driver info (SI commands are only 8 bit long)
 };
 
-std::tuple<unsigned, unsigned, Command> parseDetectMessageData(QByteArrayView data);
+std::tuple<unsigned int, Command> parseDetectMessageData(QByteArrayView data);
 
 }

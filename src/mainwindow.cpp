@@ -279,7 +279,7 @@ void MainWindow::initCardReader()
 		connect(comport, &SerialPort::readyRead, this, [this, comport]() {
 			auto data = comport->read();
 			try {
-				auto [siid, serie, cmd] = si::parseDetectMessageData(data);
+				auto [siid, cmd] = si::parseDetectMessageData(data);
 				if (cmd != si::Command::SICardRemoved) {
 					ui->edReadSiId->setText(QString::number(siid));
 					Application::instance()->setCardInserted(siid);

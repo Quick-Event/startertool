@@ -47,12 +47,12 @@ SerialPortSettingsPage::SerialPortSettingsPage(QWidget *parent)
 				connect(comport, &SerialPort::readyRead, this, [this, comport, append_log]() {
 					auto data = comport->read();
 					try {
-						auto [siid, serie, cmd] = si::parseDetectMessageData(data);
+						auto [siid, cmd] = si::parseDetectMessageData(data);
 						if (cmd == si::Command::SICardRemoved) {
-							append_log(tr("SI card removed: %1 serie: %2").arg(siid).arg(serie));
+							append_log(tr("SI card removed"));
 						}
 						else {
-							append_log(tr("SI card inserted: %1 serie: %2").arg(siid).arg(serie));
+							append_log(tr("SI card inserted: %1").arg(siid));
 						}
 					}
 					catch(const std::exception &e) {
